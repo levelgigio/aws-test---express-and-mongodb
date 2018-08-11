@@ -64,14 +64,13 @@ module.exports = class Mongo {
     
     
     // TODO: TALVEZ TIRAR O UPSERT
-    save_time(timer, callback) {
+    save_time(timer) {
         this.connect((db) => {
             db.db('prizeship').collection('timers').update({timer_label: timer.timer_label}, {$set: {values: timer.values}}, {upsert: true}, (error, result) => {
                 if(error)
                     console.log("ERRO AO SALVAR TIMERS: ", err);
                 else
                     console.log("RESULTADO SALVAR TIMERS: ", result);
-                callback();
             });
         });
     }

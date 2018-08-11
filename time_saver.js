@@ -1,12 +1,13 @@
 module.exports = function(db, ...args) {
     this.database = db;
     this.timers = args;
-    this.how_often = 20000;
+    this.how_often = 200;
     
     var obj = this;
     this.update = function(callback) {
-        for(var i = 0; i < 1; i++) 
-            obj.database.save_time(obj.timers[i].get_timer(), obj.save);
+        for(var i = 0; i < obj.timers.length; i++) 
+            obj.database.save_time(obj.timers[i].get_timer());
+        obj.save();
     }
     
     this.save = function() {

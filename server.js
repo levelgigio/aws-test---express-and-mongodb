@@ -1,28 +1,8 @@
 var Mongo = require('./mongo.js');
 var database = new Mongo();
 
-var CDTimer = require('./cd_timer.js');
-var cd_timer = new CDTimer();
-
-//<-- (1) : ative para nao carregar o antigo do banco de dados
-//cd_timer.start_new(24*60*60*1000, "countdowntimer"); 
-//cd_timer.begin();
-//--> (1) : ative para nao carregar o antigo do banco de dados
-
-var TimeSaver = require('./time_saver.js');
-var saver = new TimeSaver(database, cd_timer);
-
-//saver.save(); //--> (1) : ative para nao carregar o antigo do banco de dados
-
-// <-- (1) : desative para nao carregar o antigo do banco de dados
-database.get_timer("countdowntimer", (timer) => {
-    cd_timer.set_timer(timer);
-    cd_timer.begin();
-    
-    saver.save();
-});
-// --> (1) : desative para nao carregar o antigo do banco de dados
-
+var Game = require('./game.js');
+var game = new Game(database);
 
 var express = require('express');
 var app = express();
@@ -88,7 +68,7 @@ app.post('/login', (request, response) => {
 });
 
 app.get('/countdown_timer', (request, response) => {
-    response.send(cd_timer.get_timer());
+    response.send(game.get_cd_timer().get_timer());
 });
 
 
