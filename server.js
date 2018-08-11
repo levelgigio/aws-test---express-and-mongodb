@@ -71,4 +71,8 @@ app.get('/countdown_timer', (request, response) => {
     response.send(game.get_cd_timer().get_timer());
 });
 
+app.get('/reduce_deadline', (request, response) => {
+    game.get_deadline_timer().reduce_deadline();
+    response.send(game.get_deadline_timer().get_timer());
+})
 

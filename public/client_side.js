@@ -28,13 +28,19 @@ function vote() {
 }
 
 function get_countdown_time() {
-    $.get('http://localhost:3000/countdown_timer', (time) => {
-        var hours = Math.floor((time.values.tempo_restante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var minutes = Math.floor((time.values.tempo_restante % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds = Math.floor((time.values.tempo_restante % (1000 * 60)) / 1000);
+    $.get('http://localhost:3000/countdown_timer', (timer) => {
+        var hours = Math.floor((timer.values.tempo_restante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((timer.values.tempo_restante % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((timer.values.tempo_restante % (1000 * 60)) / 1000);
         
         $('#countdown_time').text(hours + "h " + minutes + "m " + seconds + "s ")
     })
+}
+
+function reduce_reduce_deadline() {
+    $.get('http://localhost:3000/reduce_deadline', (timer) => {
+        console.log(timer);
+    });
 }
 
 setInterval(get_countdown_time, 1000);

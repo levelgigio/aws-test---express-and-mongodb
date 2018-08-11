@@ -1,6 +1,6 @@
-module.exports = function(db, ...args) {
+module.exports = function(db) {
     this.database = db;
-    this.timers = args;
+    this.timers = [];
     this.how_often = 200;
     
     var obj = this;
@@ -12,6 +12,10 @@ module.exports = function(db, ...args) {
     
     this.save = function() {
         setTimeout(obj.update, obj.how_often);
+    }
+    
+    this.add_timer = function(timer) {
+        this.timers.push(timer);
     }
     
 }
