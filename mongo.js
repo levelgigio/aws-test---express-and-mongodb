@@ -62,6 +62,8 @@ module.exports = class Mongo {
         });
     }
     
+    
+    // TODO: TALVEZ TIRAR O UPSERT
     save_time(timer, callback) {
         this.connect((db) => {
             db.db('prizeship').collection('timers').update({timer_label: timer.timer_label}, {$set: {values: timer.values}}, {upsert: true}, (error, result) => {
@@ -70,6 +72,18 @@ module.exports = class Mongo {
                 else
                     console.log("RESULTADO SALVAR TIMERS: ", result);
                 callback();
+            });
+        });
+    }
+    
+    get_timer(label, callback) {
+        this.connect((db) => {
+            db.db('prizeship').collection('timers').find( { timer_label: label }).toArray((error, array) => {
+                if(error)
+                    console.log("ERRO AO PASSAR PRA ARRAY OS TIMERS", error);
+                else
+                    if(array.length)
+                        callback(array[0]);
             });
         });
     }

@@ -2,7 +2,10 @@ var Mongo = require('./mongo.js');
 var database = new Mongo();
 
 var CDTimer = require('./cd_timer.js');
-var cd_timer = new CDTimer(15000, "countdowntimer");
+var cd_timer = new CDTimer(24*60*60*1000, "countdowntimer");
+database.get_timer("countdowntimer", (timer) => {
+    cd_timer.set_timer(timer);
+})
 cd_timer.countdown_timer();
 
 var TimeSaver = require('./time_saver.js');
@@ -73,8 +76,7 @@ app.post('/login', (request, response) => {
 });
 
 app.get('/countdown_timer', (request, response) => {
-    response.send(cd_timer.get_timer()
-    );
+    response.send(cd_timer.get_timer());
 });
 
 

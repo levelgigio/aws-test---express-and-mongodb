@@ -4,7 +4,8 @@ module.exports = function(tempo_max, label) {
         timer_label: label,
         values: {
             reference: new Date().getTime(),
-            duration: tempo_max
+            duration: tempo_max,
+            tempo_restante: null
         }
     };
     
@@ -22,9 +23,13 @@ module.exports = function(tempo_max, label) {
             setTimeout(obj.countdown_timer, 50);
             return;
         }
-        obj.tempo_restante = tempo;
+        obj.timer.values.tempo_restante = tempo;
         setTimeout(obj.countdown_timer, 50);
         return;
+    }
+    
+    this.set_timer = function(timer) {
+        this.timer = timer;
     }
 
     this.get_timer = function() {
