@@ -2,15 +2,27 @@ var Mongo = require('./mongo.js');
 var database = new Mongo();
 
 var CDTimer = require('./cd_timer.js');
-var cd_timer = new CDTimer(24*60*60*1000, "countdowntimer");
-database.get_timer("countdowntimer", (timer) => {
-    cd_timer.set_timer(timer);
-})
-cd_timer.countdown_timer();
+var cd_timer = new CDTimer();
+
+//<-- (1) : ative para nao carregar o antigo do banco de dados
+//cd_timer.start_new(24*60*60*1000, "countdowntimer"); 
+//cd_timer.begin();
+//--> (1) : ative para nao carregar o antigo do banco de dados
 
 var TimeSaver = require('./time_saver.js');
 var saver = new TimeSaver(database, cd_timer);
-saver.save();
+
+//saver.save(); //--> (1) : ative para nao carregar o antigo do banco de dados
+
+// <-- (1) : desative para nao carregar o antigo do banco de dados
+database.get_timer("countdowntimer", (timer) => {
+    cd_timer.set_timer(timer);
+    cd_timer.begin();
+    
+    saver.save();
+});
+// --> (1) : desative para nao carregar o antigo do banco de dados
+
 
 var express = require('express');
 var app = express();

@@ -1,7 +1,7 @@
 module.exports = function(db, ...args) {
     this.database = db;
     this.timers = args;
-    this.how_often = 200;
+    this.how_often = 20000;
     
     var obj = this;
     this.update = function(callback) {

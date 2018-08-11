@@ -32,6 +32,9 @@ function get_countdown_time() {
         var hours = Math.floor((time.values.tempo_restante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         var minutes = Math.floor((time.values.tempo_restante % (1000 * 60 * 60)) / (1000 * 60));
         var seconds = Math.floor((time.values.tempo_restante % (1000 * 60)) / 1000);
-        console.log(hours + "h " + minutes + "m " + seconds + "s ");
+        
+        $('#countdown_time').text(hours + "h " + minutes + "m " + seconds + "s ")
     })
 }
+
+setInterval(get_countdown_time, 1000);
