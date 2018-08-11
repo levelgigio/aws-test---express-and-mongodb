@@ -46,9 +46,14 @@ app.post('/vote', (request, response) => {
             });
             //mongo function to update users ip
             database.user_spent_ip(user._id, ip_spent);
-            response.send("TUDO CERTO, VOTOU-SE");
+            response.send({
+                status: "ok",
+                user_ip: user.ip
+            });
         } else
-            response.send("NAO TEM IP SUFICIENTE");
+            response.send({
+               status: "NAO TEM IP SUFICIENTE", 
+            });
     });
 });
 
@@ -74,5 +79,14 @@ app.get('/countdown_timer', (request, response) => {
 app.get('/reduce_deadline', (request, response) => {
     game.get_deadline_timer().reduce_deadline();
     response.send(game.get_deadline_timer().get_timer());
-})
+});
 
+app.post('/user', (request, response) => {
+    database.search_user_by_id(request.body.user_id, (user) => {
+        response.send(user);
+    });
+});
+
+app.get('/deadline', (request, response) => {
+    response.send(game.get_deadline_timer().get_timer());
+})

@@ -42,6 +42,6 @@ module.exports = function(database) {
     }
     //--------------------------DEADLINE TIMER------------------------- //
     
-    this.saver.save();
+    //this.saver.save();
 }
 
