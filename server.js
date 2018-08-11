@@ -73,9 +73,8 @@ app.post('/login', (request, response) => {
 });
 
 app.get('/countdown_timer', (request, response) => {
-    response.send({
-        time: cd_timer.get_time()
-    });
+    response.send(cd_timer.get_timer()
+    );
 });
 
 
