@@ -8,22 +8,21 @@ module.exports = function(tempo_max, label) {
         }
     };
     
-    this.tempo;
+    this.tempo_restante;
     this.now;
     
     var obj = this;
     this.countdown_timer = function() {
         delete obj.now;
         obj.now = new Date().getTime();
-        tempo = obj.timer.values.duration + obj.timer.values.reference - obj.now;
+        var tempo = obj.timer.values.duration + obj.timer.values.reference - obj.now;
         if(tempo <= 0){
             delete obj.timer.values.reference;
             obj.timer.values.reference = new Date().getTime();
             setTimeout(obj.countdown_timer, 50);
             return;
         }
-        obj.tempo = tempo;
-        console.log(obj.tempo);
+        obj.tempo_restante = tempo;
         setTimeout(obj.countdown_timer, 50);
         return;
     }
