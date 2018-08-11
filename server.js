@@ -1,6 +1,14 @@
 var Mongo = require('./mongo.js');
 var database = new Mongo();
 
+var CDTimer = require('./cd_timer.js');
+var cd_timer = new CDTimer(15000, "countdowntimer");
+cd_timer.countdown_timer();
+
+var TimeSaver = require('./time_saver.js');
+var saver = new TimeSaver(database, cd_timer);
+saver.save();
+
 var express = require('express');
 var app = express();
 app.listen(3000);
@@ -32,7 +40,7 @@ app.post('/vote', (request, response) => {
     var ip_spent = Number(request.body.ip);
     
     // mongo function to check if the user has enough IP
-    database.search_user(user_id, (user) => {
+    database.search_user_by_id(user_id, (user) => {
         // se tem, tira do usuario e coloca na pool
         
         if(user.ip >= ip_spent) {
@@ -47,15 +55,27 @@ app.post('/vote', (request, response) => {
         } else
             response.send("NAO TEM IP SUFICIENTE");
     });
-
-    
 });
 
 app.post('/login', (request, response) => {
-    var login = request.body.login;
-    var senha = request.body.senha;
+    var username = request.body.username;
+    var pwd = request.body.pwd;
     
-    // funcao mongo de ver se esse usuario existe
+    var user = {
+        username: username,
+        pwd: pwd
+    };
     
-    // retorna o id do usuario
-})
+    // funcao mongo retorna um objeto com status e possivelmente um id
+    database.user_login(user, (id) => {
+        response.send(id);
+    }); 
+});
+
+app.get('/countdown_timer', (request, response) => {
+    response.send({
+        time: cd_timer.get_time()
+    });
+});
+
+

@@ -7,7 +7,14 @@ function get_pool() {
 }
 
 function login() {
-    
+    var username = $('#username').val();
+    var pwd = $('#pwd').val();
+    $.post('http://localhost:3000/login', {
+        username: username,
+        pwd: pwd
+    }, (response) => {
+        console.log(response);
+    });
 }
 
 function vote() {
@@ -18,4 +25,10 @@ function vote() {
     }, (response) => {
         console.log(response);
     });
+}
+
+function get_countdown_time() {
+    $.get('http://localhost:3000/countdown_timer', (time) => {
+        console.log(time);
+    })
 }
