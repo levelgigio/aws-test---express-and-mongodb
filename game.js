@@ -2,15 +2,15 @@ module.exports = function(database) {
     this.database = database;
     
     //--------------------------TIMER SAVER------------------------- //
-    this.TimeSaver = require('./time_saver.js');
-    this.saver = new this.TimeSaver(this.database, 200);
+    this.Saver = require('./saver.js');
+    this.saver = new this.Saver(this.database, 200);
     //--------------------------TIMER SAVER------------------------- //
     
     //--------------------------CD TIMER------------------------- //
     this.CDTimer = require('./cd_timer.js');
-    this.cd_timer = new this.CDTimer(this.database);
+    this.cd_timer = new this.CDTimer(this);
 
-    this.cd_timer.start_new(45000, "countdowntimer"); 
+    this.cd_timer.start_new(15000, "countdowntimer"); 
     this.cd_timer.begin();
     this.saver.add_timer(this.cd_timer);
     
@@ -42,6 +42,25 @@ module.exports = function(database) {
     }
     //--------------------------DEADLINE TIMER------------------------- //
     
-    this.saver.save();
+    // ------------------------------POOL-----------------------------//
+    this.Pool = require('./pool.js');
+    this.pool = new this.Pool();
+    
+    //this.pool.start_new();
+    //this.saver.add_pool(this.pool);
+    
+    this.database.get_pool((pool) => {
+        this.pool.set_pool(pool);
+        this.saver.add_pool(this.pool);
+    });
+    
+    this.get_pool = function() {
+        return this.pool;
+    }
+    // ------------------------------POOL-----------------------------//
+    
+    // ------------------------------NAVE-----------------------------//
+    // ------------------------------NAVE-----------------------------//
+    
+    setTimeout(this.saver.save, 10000);
 }
-

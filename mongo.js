@@ -30,33 +30,16 @@ module.exports = class Mongo {
         });
     }
 
-    update_pool(cpool) {
+    save_pool(cpool) {
         // TODO: ADD UPSERT
         this.connect((db) => {
             db.db('prizeship').collection('pool').update( { pool: {$exists: true}}, {$set : {pool : cpool}});
         });
     }
     
-    close_pool() {
-        this.get_pool((pool) => {
-            this.distribute_ip_winners(pool);
-            this.mover_nave(pool);
-        });
-        // TALVEZ SERIA BOM ISSO SER CALLBACK DA ULTIMA FUNCAO ACIMA...
-        this.clear_pool();
-    }
     
     distribute_ip_winners(pool) {
         
-    }
-    
-    clear_pool() {
-        this.connect((db) => {
-            db.db('prizeship').collection('pool').update( { pool: {$exists: true}}, {$set : {pool : {
-                subir: 0,
-                descer: 0
-            }}}, {upsert: true});
-        });
     }
 
     user_spent_ip(user_id, quant) {

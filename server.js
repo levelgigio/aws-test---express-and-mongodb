@@ -23,9 +23,7 @@ app.get('/', (request, response) => {
 
 // RETRIEVE OBJECT COM OS VOTOS
 app.get('/get-pool', (request, response) => {
-    database.get_pool((pool) => {
-        response.send(pool);
-    }); 
+    response.send(game.get_pool());
 });
 
 // ADICIONA UM VOTO NA POOL
@@ -37,13 +35,14 @@ app.post('/vote', (request, response) => {
     // mongo function to check if the user has enough IP
     database.search_user_by_id(user_id, (user) => {
         // se tem, tira do usuario e coloca na pool
-        
         if(user.ip >= ip_spent) {
-            // mongo function to update pool
-            database.get_pool((pool) => {
-                pool[voto] += ip_spent;
-                database.update_pool(pool);
-            });
+            switch(voto) {
+                case "subir":
+                    game.pool.subir(ip_spent);
+                    break;
+                case "descer":
+                    game.pool.descer(ip_spent);
+            }
             //mongo function to update users ip
             database.user_spent_ip(user._id, ip_spent);
             response.send({
@@ -91,6 +90,8 @@ app.get('/deadline', (request, response) => {
     response.send(game.get_deadline_timer().get_timer());
 });
 
+
+// TODO: TIRAR DA DATABASE 
 app.get('/nave', (request, response) => {
     database.get_nave((nave) => {
         response.send(nave);

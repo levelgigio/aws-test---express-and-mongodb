@@ -1,12 +1,14 @@
 module.exports = function(db, how_often) {
     this.database = db;
     this.timers = [];
+    this.pool;
     this.how_often = how_often;
     
     var obj = this;
     this.update = function(callback) {
         for(var i = 0; i < obj.timers.length; i++) 
             obj.database.save_time(obj.timers[i].get_timer());
+        obj.database.save_pool(obj.pool.get_pool());
         obj.save();
     }
     
@@ -18,13 +20,8 @@ module.exports = function(db, how_often) {
         this.timers.push(timer);
     }
     
-}
-
-/* COMO EH UM JSON DE TIMER
-{
-    timer_label: "countdowntimer",
-    values: {
-        time: 28919
+    this.add_pool = function(pool) {
+        this.pool = pool;
     }
+    
 }
-*/

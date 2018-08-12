@@ -106,25 +106,23 @@ $(document).ready(() => {
     // -----------------------SERVER INTERACTIONS------------------------ //
 
     // -----------------------CLIENT VARIABLES AND GAME-------------------- //
-
     var user_id = '5b6cdd1e1879441f10bb345f';
     var nave = new Nave(horse_json);
     nave.animate("horse_run", true);
 
     update();
     setInterval(update, 300);
-    
     // -----------------------CLIENT VARIABLES AND GAME-------------------- //
     
     // ------------------------WINDOW INTERACTIONS-------------------------- //
-    
     $('#pool_status').on('click', get_pool);
+    $('#login').on('click', login);
+    $('#reduce_deadline').on('click', reduce_deadline);
     $('#vote_descer').on('click', () => {
         vote("descer") 
     });
     $('#vote_subir').on('click', () => {
         vote("subir")
     });
-    
     // ------------------------WINDOW INTERACTIONS-------------------------- //
 });
