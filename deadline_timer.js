@@ -1,8 +1,10 @@
 module.exports = function() {
-
+    //-------------------VARIABLES---------------------//
     this.timer;
     //this._months = ["janeiro", "fevereiro", "marco", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-
+    //-------------------VARIABLES---------------------//
+    
+    //-------------------METHODS---------------------//
     this.reduce_deadline = function() {
         this.timer.values.deadline.setMilliseconds(this.timer.values.deadline.getMilliseconds()-this.timer.values.current_reduction);
     }
@@ -26,6 +28,6 @@ module.exports = function() {
         this.timer.values.deadline = new Date();
         this.timer.values.deadline.setDate(this.timer.values.deadline.getDate() + tempo_max_dias);
     }
-
+    //-------------------METHODS---------------------//
 }
 

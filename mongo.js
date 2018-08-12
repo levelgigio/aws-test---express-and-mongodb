@@ -5,7 +5,7 @@ module.exports = class Mongo {
         this.ObjectId = require('mongodb').ObjectId; 
     }
     
-    //----------------------------------POOL-------------------------------------//
+    //------------------------POOL---------------------------//
     get_pool(callback) {
         this.connect((db) => {
             db.db('prizeship').collection('pool').find( { pool: { $exists: true } }).toArray( (error, array) => {
@@ -24,9 +24,9 @@ module.exports = class Mongo {
             db.db('prizeship').collection('pool').update( { pool: {$exists: true}}, {$set : {pool : cpool}});
         });
     }
-    //----------------------------------POOL-------------------------------------//
+    //---------------------------POOL------------------------------//
 
-    //----------------------------------USER-------------------------------------//
+    //-----------------------------USER------------------------------//
     // testar, se funfar, arrumar a pool_state pq ta usando find em vez de findOne
     search_user_by_id(user_id, callback) {
         var id = new this.ObjectId(user_id);
@@ -68,9 +68,9 @@ module.exports = class Mongo {
     distribute_ip_winners(pool) {
         
     }
-    //----------------------------------USER-------------------------------------//
+    //-----------------------------USER---------------------------------//
     
-    //----------------------------------TIMERS-------------------------------------//
+    //---------------------------TIMERS---------------------------------//
     // TODO: TALVEZ TIRAR O UPSERT
     save_time(timer) {
         this.connect((db) => {
@@ -94,7 +94,7 @@ module.exports = class Mongo {
             });
         });
     }
-    //----------------------------------TIMERS-------------------------------------//
+    //-------------------------------TIMERS---------------------------------//
     
     //----------------------------------NAVE-------------------------------------//
     get_nave(callback) {
@@ -115,9 +115,9 @@ module.exports = class Mongo {
             db.db('prizeship').collection('nave').update( { nave: {$exists: true}}, {$set : {nave: nave}});
         });
     }
-    //----------------------------------NAVE-------------------------------------//
+    //------------------------------NAVE----------------------------------//
     
-    //----------------------------------EVERYTHING-------------------------------------//
+    //------------------------------EVERYTHING--------------------------------//
     get_everything(user_id, callback) {
         var everything_obj = {};
         this.connect((db) => {
@@ -153,9 +153,9 @@ module.exports = class Mongo {
             });
         });
     }
-    //----------------------------------EVERYTHING-------------------------------------//
+    //------------------------------EVERYTHING----------------------------//
     
-    //----------------------------------CONNECTION-------------------------------------//
+    //------------------------CONNECTION------------------------//
     connect(callback) {
         this.mongo.connect('mongodb://localhost:27017/', (error, db) => {
             if (error)
@@ -165,5 +165,5 @@ module.exports = class Mongo {
             db.close();
         });
     }
-    //----------------------------------CONNECTION-------------------------------------//
+    //-----------------------CONNECTION----------------------------//
 }

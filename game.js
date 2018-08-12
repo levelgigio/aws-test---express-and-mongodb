@@ -67,7 +67,6 @@ module.exports = function(database) {
     //this.saver.add_nave(this.nave);
     
     this.database.get_nave((nave) => {
-        console.log(nave);
         this.nave.set_nave(nave);
         this.saver.add_nave(this.nave);
     });

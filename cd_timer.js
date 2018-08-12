@@ -1,9 +1,11 @@
 module.exports = function(game) {
-    
+    //-------------------VARIABLES---------------------//
     this.game = game;
     this.timer;
     this.now;
+    //-------------------VARIABLES---------------------//
     
+    //-------------------METHODS---------------------//
     var obj = this;
     this.begin = function() {
         delete obj.now;
@@ -39,5 +41,5 @@ module.exports = function(game) {
             }
         };
     }
-
+    //-------------------METHODS---------------------//
 }

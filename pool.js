@@ -1,6 +1,9 @@
 module.exports = function(game) {
+    //-------------------VARIABLES---------------------//
     this.pool;
+    //-------------------VARIABLES---------------------//
     
+    //-------------------METHODS---------------------//
     this.subir = function(quant) {
         this.pool.subir += quant;
         this.pool.ip_spent += quant;
@@ -16,7 +19,7 @@ module.exports = function(game) {
             subir: 0,
             descer: 0,
             ip_spent: 0
-        }
+        };
     }
     
     this.set_pool = function(pool) {
@@ -28,9 +31,12 @@ module.exports = function(game) {
     }
     
     this.close_pool = function() {
-        game.nave.subir();
-        // distribuir ip spent
+        if (this.pool.subir > this.pool.descer)
+            game.nave.subir();
+        else if ( this.pool.subir < this.pool.descer )
+            game.nave.descer();
+        // TODO: distribuir ip spent
         this.start_new();
     }
-    
+    //-------------------METHODS---------------------//
 }

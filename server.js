@@ -14,13 +14,14 @@ app.use(body_parser.json());
 
 app.use(express.static('public'));
 
+//----------------------------------INDEX-------------------------------------//
 //var project_path = 'C:/Users/Giovanni/Documents/webdev/aws_test/';
-
-// INDEX PAGE
 app.get('/', (request, response) => {
     //response.sendFile(project_path + 'index.html');
 });
+//----------------------------------INDEX-------------------------------------//
 
+//----------------------------------POOL-------------------------------------//
 // RETRIEVE OBJECT COM OS VOTOS
 app.get('/get-pool', (request, response) => {
     response.send(game.get_pool());
@@ -55,7 +56,9 @@ app.post('/vote', (request, response) => {
             });
     });
 });
+//----------------------------------POOL-------------------------------------//
 
+//----------------------------------USER-------------------------------------//
 app.post('/login', (request, response) => {
     var username = request.body.username;
     var pwd = request.body.pwd;
@@ -71,6 +74,14 @@ app.post('/login', (request, response) => {
     }); 
 });
 
+app.post('/user', (request, response) => {
+    database.search_user_by_id(request.body.user_id, (user) => {
+        response.send(user);
+    });
+});
+//----------------------------------USER-------------------------------------//
+
+//----------------------------------TIMERS-------------------------------------//
 app.get('/countdown_timer', (request, response) => {
     response.send(game.get_cd_timer().get_timer());
 });
@@ -80,24 +91,22 @@ app.get('/reduce_deadline', (request, response) => {
     response.send(game.get_deadline_timer().get_timer());
 });
 
-app.post('/user', (request, response) => {
-    database.search_user_by_id(request.body.user_id, (user) => {
-        response.send(user);
-    });
-});
-
 app.get('/deadline', (request, response) => {
     response.send(game.get_deadline_timer().get_timer());
 });
+//----------------------------------TIMERS-------------------------------------//
 
-
+//----------------------------------NAVE-------------------------------------//
 app.get('/nave', (request, response) => {
     response.send(game.get_nave());
 });
+//----------------------------------NAVE-------------------------------------//
 
+//----------------------------------EVERYTHING-------------------------------------//
 app.post('/everything', (request, response) => {
     var user_id = request.body.user_id;
     database.get_everything(user_id, (everything) => {
         response.send(everything);
     });
 });
+//----------------------------------EVERYTHING-------------------------------------//

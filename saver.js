@@ -1,10 +1,13 @@
 module.exports = function(db, how_often) {
+    //-------------------VARIABLES---------------------//
     this.database = db;
     this.timers = [];
     this.pool;
     this.nave;
     this.how_often = how_often;
+    //-------------------VARIABLES---------------------//
     
+    //-------------------METHODS---------------------//
     var obj = this;
     this.update = function(callback) {
         for(var i = 0; i < obj.timers.length; i++) 
@@ -29,5 +32,5 @@ module.exports = function(db, how_often) {
     this.add_nave = function(nave) {
         this.nave = nave;
     }
-    
+    //-------------------METHODS---------------------//
 }

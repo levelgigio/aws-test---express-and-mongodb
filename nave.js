@@ -1,6 +1,9 @@
 module.exports = function() {
+    //-------------------VARIABLES---------------------//
     this.nave;
+    //-------------------VARIABLES---------------------//
     
+    //-------------------METHODS---------------------//
     this.subir = function() {
         this.nave.altitude += this.nave.gas_default + this.nave.gas_extra;
     }
@@ -24,4 +27,5 @@ module.exports = function() {
             gas_extra: 0
         }
     }
+    //-------------------METHODS---------------------//
 }
