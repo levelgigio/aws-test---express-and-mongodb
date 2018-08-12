@@ -91,11 +91,8 @@ app.get('/deadline', (request, response) => {
 });
 
 
-// TODO: TIRAR DA DATABASE 
 app.get('/nave', (request, response) => {
-    database.get_nave((nave) => {
-        response.send(nave);
-    })
+    response.send(game.get_nave());
 });
 
 app.post('/everything', (request, response) => {

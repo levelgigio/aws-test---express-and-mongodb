@@ -44,7 +44,7 @@ module.exports = function(database) {
     
     // ------------------------------POOL-----------------------------//
     this.Pool = require('./pool.js');
-    this.pool = new this.Pool();
+    this.pool = new this.Pool(this);
     
     //this.pool.start_new();
     //this.saver.add_pool(this.pool);
@@ -60,6 +60,17 @@ module.exports = function(database) {
     // ------------------------------POOL-----------------------------//
     
     // ------------------------------NAVE-----------------------------//
+    this.Nave = require('./nave.js');
+    this.nave = new this.Nave();
+    
+    //this.nave.start_new();
+    //this.saver.add_nave(this.nave);
+    
+    this.database.get_nave((nave) => {
+        console.log(nave);
+        this.nave.set_nave(nave);
+        this.saver.add_nave(this.nave);
+    });
     // ------------------------------NAVE-----------------------------//
     
     setTimeout(this.saver.save, 10000);

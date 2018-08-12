@@ -1,4 +1,4 @@
-module.exports = function() {
+module.exports = function(game) {
     this.pool;
     
     this.subir = function(quant) {
@@ -28,6 +28,7 @@ module.exports = function() {
     }
     
     this.close_pool = function() {
+        game.nave.subir();
         // distribuir ip spent
         this.start_new();
     }

@@ -4,7 +4,8 @@ module.exports = class Mongo {
         this.mongo = require('mongodb').MongoClient;
         this.ObjectId = require('mongodb').ObjectId; 
     }
-
+    
+    //----------------------------------POOL-------------------------------------//
     get_pool(callback) {
         this.connect((db) => {
             db.db('prizeship').collection('pool').find( { pool: { $exists: true } }).toArray( (error, array) => {
@@ -16,7 +17,16 @@ module.exports = class Mongo {
             });
         }); 
     }
+    
+    save_pool(cpool) {
+        // TODO: ADD UPSERT
+        this.connect((db) => {
+            db.db('prizeship').collection('pool').update( { pool: {$exists: true}}, {$set : {pool : cpool}});
+        });
+    }
+    //----------------------------------POOL-------------------------------------//
 
+    //----------------------------------USER-------------------------------------//
     // testar, se funfar, arrumar a pool_state pq ta usando find em vez de findOne
     search_user_by_id(user_id, callback) {
         var id = new this.ObjectId(user_id);
@@ -29,19 +39,7 @@ module.exports = class Mongo {
             });
         });
     }
-
-    save_pool(cpool) {
-        // TODO: ADD UPSERT
-        this.connect((db) => {
-            db.db('prizeship').collection('pool').update( { pool: {$exists: true}}, {$set : {pool : cpool}});
-        });
-    }
     
-    
-    distribute_ip_winners(pool) {
-        
-    }
-
     user_spent_ip(user_id, quant) {
         var id = new this.ObjectId(user_id);
         this.connect((db) => {
@@ -67,7 +65,12 @@ module.exports = class Mongo {
         });
     }
     
+    distribute_ip_winners(pool) {
+        
+    }
+    //----------------------------------USER-------------------------------------//
     
+    //----------------------------------TIMERS-------------------------------------//
     // TODO: TALVEZ TIRAR O UPSERT
     save_time(timer) {
         this.connect((db) => {
@@ -91,7 +94,9 @@ module.exports = class Mongo {
             });
         });
     }
+    //----------------------------------TIMERS-------------------------------------//
     
+    //----------------------------------NAVE-------------------------------------//
     get_nave(callback) {
         this.connect((db) => {
             db.db('prizeship').collection('nave').find( { nave: {$exists: true} } ).toArray((error, array) => {
@@ -99,27 +104,20 @@ module.exports = class Mongo {
                     console.log("ERRO AO PASSAR PRA ARRAY A NAVE", error);
                 else
                     if(array.length)
-                        callback(array[0]);
+                        callback(array[0].nave);
             });
         });
     }
-
-    mover_nave(pool) {
-        var movimento = 0;
-        if(pool.subir > pool.descer)
-            movimento = 1;
-        else if(pool.subir < pool.descer)
-            movimento = -1;
-        this.get_nave((nave) => {
-            var nova_nave = nave;
-            nova_nave.nave.altitude = nave.nave.altitude + (nave.nave.gas_default + nave.nave.gas_extra)*movimento;
-            nova_nave.nave.gas_extra = 0;
-            this.connect((db) => {
-                db.db('prizeship').collection('nave').update( {nave: {$exists: true}}, { nave: nova_nave.nave });
-            });
-        });  
-    }
     
+    save_nave(nave) {
+        // TODO: ADD UPSERT MAYBE
+        this.connect((db) => {
+            db.db('prizeship').collection('nave').update( { nave: {$exists: true}}, {$set : {nave: nave}});
+        });
+    }
+    //----------------------------------NAVE-------------------------------------//
+    
+    //----------------------------------EVERYTHING-------------------------------------//
     get_everything(user_id, callback) {
         var everything_obj = {};
         this.connect((db) => {
@@ -155,7 +153,9 @@ module.exports = class Mongo {
             });
         });
     }
+    //----------------------------------EVERYTHING-------------------------------------//
     
+    //----------------------------------CONNECTION-------------------------------------//
     connect(callback) {
         this.mongo.connect('mongodb://localhost:27017/', (error, db) => {
             if (error)
@@ -165,5 +165,5 @@ module.exports = class Mongo {
             db.close();
         });
     }
-
+    //----------------------------------CONNECTION-------------------------------------//
 }
