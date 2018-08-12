@@ -56,13 +56,13 @@ function show_countdown_time() {
 
 function reduce_reduce_deadline() {
     $.get('http://localhost:3000/reduce_deadline', (timer) => {
-        console.log(timer);
+        //console.log(timer);
     });
 }
 
 function show_deadline() {
     $.get('http://localhost:3000/deadline', (deadline) => {
-        $('#deadline').text(deadline);
+        $('#deadline').text(deadline.values.deadline);
     });
 }
 

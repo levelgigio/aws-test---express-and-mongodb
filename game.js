@@ -3,7 +3,7 @@ module.exports = function(database) {
     
     //--------------------------TIMER SAVER------------------------- //
     this.TimeSaver = require('./time_saver.js');
-    this.saver = new this.TimeSaver(this.database);
+    this.saver = new this.TimeSaver(this.database, 200);
     //--------------------------TIMER SAVER------------------------- //
     
     //--------------------------CD TIMER------------------------- //
@@ -42,6 +42,6 @@ module.exports = function(database) {
     }
     //--------------------------DEADLINE TIMER------------------------- //
     
-    //this.saver.save();
+    this.saver.save();
 }
 
