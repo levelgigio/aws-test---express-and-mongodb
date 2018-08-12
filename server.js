@@ -79,6 +79,12 @@ app.post('/user', (request, response) => {
         response.send(user);
     });
 });
+
+app.post('/split', (request, response) => {
+    database.split_pp(request.body.user_id, request.body.pp_to_split, (result) => {
+        response.send(result);
+    })
+})
 //----------------------------------USER-------------------------------------//
 
 //----------------------------------TIMERS-------------------------------------//

@@ -35,6 +35,15 @@ $(document).ready(() => {
             console.log(response.status);     
         });
     }
+    
+    function split_pp(user_id, quant) {
+        $.post('http://localhost:3000/split', {
+            user_id: user_id,
+            pp_to_split: quant
+        }, (response) => {
+            console.log(response);
+        })
+    }
     //-----------------------POOL---------------------------//
     /*//NAO FUNCIONA
     function update_slider() {
@@ -103,7 +112,7 @@ $(document).ready(() => {
     // -----------------------SERVER INTERACTIONS------------------------ //
 
     // -----------------------CLIENT VARIABLES AND GAME-------------------- //
-    var user_id = '5b6cdd1e1879441f10bb345f';
+    var user_id = '5b70b7beab615423d8261bab';
     var nave = new Nave(horse_json);
     nave.animate("horse_run", true);
 
@@ -129,6 +138,9 @@ $(document).ready(() => {
     $('#pool_status').on('click', get_pool);
     $('#login').on('click', login);
     $('#reduce_deadline').on('click', reduce_deadline);
+    $('#split_pp').on('click', () => {
+        split_pp(user_id, 1);
+    });
     $('#vote_descer').on('click', () => {
         vote("descer"); 
     });

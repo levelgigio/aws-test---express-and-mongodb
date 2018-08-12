@@ -19,7 +19,6 @@ module.exports = class Mongo {
     }
     
     save_pool(cpool) {
-        // TODO: ADD UPSERT
         this.connect((db) => {
             db.db('prizeship').collection('pool').update( { pool: {$exists: true}}, {$set : {pool : cpool}});
         });
@@ -35,9 +34,16 @@ module.exports = class Mongo {
                 if(error)
                     console.log("ERRO AO PASSAR PRA ARRAY OS USERS", error);
                 else
-                    callback(array[0]);
+                    callback(array[0].user);
             });
         });
+    }
+    
+    update_user(user_id, user) {
+        var id = new this.ObjectId(user_id);
+        this.connect((db) => {
+            db.db('prizeship').collection('users').update( { _id : id}, {user: user});
+        })
     }
     
     user_spent_ip(user_id, quant) {
@@ -49,7 +55,7 @@ module.exports = class Mongo {
     
     user_login(user, callback) {
         this.connect((db) => {
-            db.db('prizeship').collection('users').find( { username: user.username, pwd: user.pwd} ).toArray((error, array) => {
+            db.db('prizeship').collection('users').find( { "user.username": user.username, "user.pwd": user.pwd} ).toArray((error, array) => {
                 if(error)
                     console.log("ERRO AO PASSAR PRA ARRAY OS USERS", error);
                 else
@@ -67,6 +73,19 @@ module.exports = class Mongo {
     
     distribute_ip_winners(pool) {
         
+    }
+    
+    split_pp(user_id, quant, callback) {
+        this.search_user_by_id(user_id, (user) => {
+            if(user.pp >= quant) {
+                user.pp -= quant;
+                user.ip += quant*10;
+                this.update_user(user_id, user);
+                console.log("user depois de split: ", user);
+                callback("splitou " + quant + " pp");
+            } else
+                callback("nao tinha pp o suficiente")
+        });
     }
     //-----------------------------USER---------------------------------//
     
@@ -157,7 +176,7 @@ module.exports = class Mongo {
     
     //------------------------CONNECTION------------------------//
     connect(callback) {
-        this.mongo.connect('mongodb://localhost:27017/', (error, db) => {
+        this.mongo.connect('mongodb://localhost:27017/prizeship', { useNewUrlParser: true }, (error, db) => {
             if (error)
                 console.log("ERRO AO CONECTAR AO MONGO DB: ", error);
             else
