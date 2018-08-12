@@ -89,4 +89,17 @@ app.post('/user', (request, response) => {
 
 app.get('/deadline', (request, response) => {
     response.send(game.get_deadline_timer().get_timer());
-})
+});
+
+app.get('/nave', (request, response) => {
+    database.get_nave((nave) => {
+        response.send(nave);
+    })
+});
+
+app.post('/everything', (request, response) => {
+    var user_id = request.body.user_id;
+    database.get_everything(user_id, (everything) => {
+        response.send(everything);
+    });
+});

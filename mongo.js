@@ -36,6 +36,28 @@ module.exports = class Mongo {
             db.db('prizeship').collection('pool').update( { pool: {$exists: true}}, {$set : {pool : cpool}});
         });
     }
+    
+    close_pool() {
+        this.get_pool((pool) => {
+            this.distribute_ip_winners(pool);
+            this.mover_nave(pool);
+        });
+        // TALVEZ SERIA BOM ISSO SER CALLBACK DA ULTIMA FUNCAO ACIMA...
+        this.clear_pool();
+    }
+    
+    distribute_ip_winners(pool) {
+        
+    }
+    
+    clear_pool() {
+        this.connect((db) => {
+            db.db('prizeship').collection('pool').update( { pool: {$exists: true}}, {$set : {pool : {
+                subir: 0,
+                descer: 0
+            }}}, {upsert: true});
+        });
+    }
 
     user_spent_ip(user_id, quant) {
         var id = new this.ObjectId(user_id);
@@ -69,8 +91,8 @@ module.exports = class Mongo {
             db.db('prizeship').collection('timers').update({timer_label: timer.timer_label}, {$set: {values: timer.values}}, {upsert: true}, (error, result) => {
                 if(error)
                     console.log("ERRO AO SALVAR TIMERS: ", err);
-                else
-                    console.log("RESULTADO SALVAR TIMERS: ", result);
+                /*else
+                    console.log("RESULTADO SALVAR TIMERS: ", result);*/
             });
         });
     }
@@ -86,8 +108,71 @@ module.exports = class Mongo {
             });
         });
     }
+    
+    get_nave(callback) {
+        this.connect((db) => {
+            db.db('prizeship').collection('nave').find( { nave: {$exists: true} } ).toArray((error, array) => {
+                if(error)
+                    console.log("ERRO AO PASSAR PRA ARRAY A NAVE", error);
+                else
+                    if(array.length)
+                        callback(array[0]);
+            });
+        });
+    }
 
-
+    mover_nave(pool) {
+        var movimento = 0;
+        if(pool.subir > pool.descer)
+            movimento = 1;
+        else if(pool.subir < pool.descer)
+            movimento = -1;
+        this.get_nave((nave) => {
+            var nova_nave = nave;
+            nova_nave.nave.altitude = nave.nave.altitude + (nave.nave.gas_default + nave.nave.gas_extra)*movimento;
+            nova_nave.nave.gas_extra = 0;
+            this.connect((db) => {
+                db.db('prizeship').collection('nave').update( {nave: {$exists: true}}, { nave: nova_nave.nave });
+            });
+        });  
+    }
+    
+    get_everything(user_id, callback) {
+        var everything_obj = {};
+        this.connect((db) => {
+            db.db('prizeship').collection('nave').find({ nave: {$exists: true}}).toArray((error, array) => {
+                if (error)
+                    console.log("ERRO AO COLOCAR EM ARRAY NAVE: ", error);
+                else
+                    everything_obj.nave = array[0];
+            });
+            
+            db.db('prizeship').collection('pool').find({ pool: {$exists: true}}).toArray((error, array) => {
+                if (error)
+                    console.log("ERRO AO COLOCAR EM ARRAY POOL: ", error);
+                else
+                    everything_obj.pool = array[0];
+            });
+            
+            db.db('prizeship').collection('timers').find({ timer_label: {$exists: true}}).toArray((error, array) => {
+                if (error)
+                    console.log("ERRO AO COLOCAR EM ARRAY TIMERS: ", error);
+                else
+                    everything_obj.timers = array;
+            });
+            
+            var id = new this.ObjectId(user_id);
+            db.db('prizeship').collection('users').find({ _id: id}).toArray((error, array) => {
+                if (error)
+                    console.log("ERRO AO COLOCAR EM ARRAY USER: ", error);
+                else {
+                    everything_obj.user = array[0];
+                    callback(everything_obj);
+                }
+            });
+        });
+    }
+    
     connect(callback) {
         this.mongo.connect('mongodb://localhost:27017/', (error, db) => {
             if (error)

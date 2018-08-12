@@ -8,17 +8,17 @@ module.exports = function(database) {
     
     //--------------------------CD TIMER------------------------- //
     this.CDTimer = require('./cd_timer.js');
-    this.cd_timer = new this.CDTimer();
+    this.cd_timer = new this.CDTimer(this.database);
 
-    //this.cd_timer.start_new(24*60*60*1000, "countdowntimer"); 
-    //this.cd_timer.begin();
-    //this.saver.add_timer(this.cd_timer);
+    this.cd_timer.start_new(45000, "countdowntimer"); 
+    this.cd_timer.begin();
+    this.saver.add_timer(this.cd_timer);
     
-    this.database.get_timer("countdowntimer", (timer) => {
+    /*this.database.get_timer("countdowntimer", (timer) => {
         this.cd_timer.set_timer(timer);
         this.cd_timer.begin();
         this.saver.add_timer(this.cd_timer);
-    });
+    });*/
     
     this.get_cd_timer = function() {
         return this.cd_timer;

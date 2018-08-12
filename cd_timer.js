@@ -1,5 +1,6 @@
-module.exports = function() {
+module.exports = function(database) {
     
+    this.database = database;
     this.timer;
     this.now;
     
@@ -11,6 +12,7 @@ module.exports = function() {
         if(tempo <= 0){
             delete obj.timer.values.reference;
             obj.timer.values.reference = new Date().getTime();
+            obj.database.close_pool();
             setTimeout(obj.begin, 50);
             return;
         }
