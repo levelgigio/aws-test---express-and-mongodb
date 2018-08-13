@@ -32,7 +32,7 @@ app.post('/vote', (request, response) => {
     var user_id = request.body.user;
     var voto = request.body.voto;
     var ip_spent = Number(request.body.ip);
-    
+
     // mongo function to check if the user has enough IP
     database.search_user_by_id(user_id, (user) => {
         // se tem, tira do usuario e coloca na pool
@@ -45,14 +45,15 @@ app.post('/vote', (request, response) => {
                     game.pool.descer(ip_spent);
             }
             //mongo function to update users ip
-            database.user_spent_ip(user._id, ip_spent);
-            response.send({
-                status: "ok",
-                user_ip: user.ip
+            database.user_spent_ip(user_id, ip_spent, () => {
+                response.send({
+                    status: "ok",
+                    user_ip: user.ip - ip_spent
+                });
             });
         } else
             response.send({
-               status: "NAO TEM IP SUFICIENTE", 
+                status: "NAO TEM IP SUFICIENTE", 
             });
     });
 });
@@ -62,12 +63,12 @@ app.post('/vote', (request, response) => {
 app.post('/login', (request, response) => {
     var username = request.body.username;
     var pwd = request.body.pwd;
-    
+
     var user = {
         username: username,
         pwd: pwd
     };
-    
+
     // funcao mongo retorna um objeto com status e possivelmente um id
     database.user_login(user, (id) => {
         response.send(id);

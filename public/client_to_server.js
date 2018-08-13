@@ -44,7 +44,7 @@ $(document).ready(() => {
             console.log(response);
         })
     }
-    //-----------------------POOL---------------------------//
+    //-----------------------USER---------------------------//
     /*//NAO FUNCIONA
     function update_slider() {
         $.post('/user', {

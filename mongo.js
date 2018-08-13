@@ -46,10 +46,11 @@ module.exports = class Mongo {
         })
     }
     
-    user_spent_ip(user_id, quant) {
+    user_spent_ip(user_id, quant, callback) {
         var id = new this.ObjectId(user_id);
         this.connect((db) => {
-            db.db('prizeship').collection('users').update( { _id : id}, {$inc: {ip: -quant, ip_spent: quant}});
+            db.db('prizeship').collection('users').update( { _id : id}, {$inc: {"user.ip": -quant, "user.ip_spent": quant}});
+            callback();
         });
     }
     

@@ -14,7 +14,8 @@ module.exports = function(game) {
         if(tempo <= 0){
             delete obj.timer.values.reference;
             obj.timer.values.reference = new Date().getTime();
-            obj.game.pool.close_pool();
+            if(obj.game.pool)
+                obj.game.pool.close_pool();
             setTimeout(obj.begin, 50);
             return;
         }
