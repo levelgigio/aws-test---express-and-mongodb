@@ -14,14 +14,9 @@ $(document).ready(() => {
             ip: 1,
             voto: voto
         }, (response) => {
-            /*if(response.status === "ok")
-            update_slider();*/
-
-            console.log("aqui? ", response);
+            console.log("user: ", response);
         });
     }
-    //-----------------------POOL---------------------------//
-
     //-----------------------USER---------------------------//
     function login() {
         var username = $('#username').val();
@@ -36,9 +31,11 @@ $(document).ready(() => {
         });
     }
     
-    function get_user_by_ip(user_id) {
-        $.post(window.location.protocol + "//" + window.location.host + '/split', {
+    function get_user_by_id(user_id, callback) {
+        $.post(window.location.protocol + "//" + window.location.host + '/user', {
             user_id: user_id,
+        }, (user) => {
+            callback(user)
         });
     }
 
@@ -50,18 +47,6 @@ $(document).ready(() => {
             console.log(response);
         })
     }
-    //-----------------------USER---------------------------//
-    /*//NAO FUNCIONA
-    function update_slider() {
-        $.post('/user', {
-            user_id: user_id
-        }, (user) => {
-            $('#ip_spent').slider({
-                max: user.ip
-            });
-            console.log(user);
-        });
-    }*/
     //-----------------------TIMERS---------------------------//
     function reduce_deadline() {
         $.get(window.location.protocol + "//" + window.location.host + '/reduce_deadline', (timer) => {
@@ -81,17 +66,12 @@ $(document).ready(() => {
                 callback();
         });
     }
-    //-----------------------TIMERS---------------------------//
-
     //-----------------------NAVE---------------------------//
     function get_nave_status() {
         $.get(window.location.protocol + "//" + window.location.host + '/nave', (nave) => {
             nave_status = nave.nave;
         });
     }
-    //-----------------------NAVE---------------------------//
-
-
     //-----------------------UPDATE---------------------------//
     function get_essencials(callback) {
         $.post(window.location.protocol + "//" + window.location.host + '/essencials', { user_id: user_id }, (everything) => {
@@ -116,7 +96,6 @@ $(document).ready(() => {
             show_pool(essencials.pool);
         });
     }
-    //-----------------------UPDATE---------------------------//
     // -----------------------SERVER INTERACTIONS------------------------ //
 
     // -----------------------CLIENT VARIABLES AND GAME-------------------- //
@@ -132,8 +111,6 @@ $(document).ready(() => {
             setInterval(update, 300);
         })
     }, 1000);
-    // -----------------------CLIENT VARIABLES AND GAME-------------------- //
-
     // ------------------------SHOW VARIABLES-------------------------- //
     function show_countdown_time(timer) {
         var hours = Math.floor((timer.values.tempo_restante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -161,8 +138,10 @@ $(document).ready(() => {
         $("#pool_subir").text("SUBIR: " + pool.pool.subir);
         $("#pool_descer").text("DESCER: " + pool.pool.descer);
     }
-    // ------------------------SHOW VARIABLES-------------------------- //
-
+    
+    function show_user(user) {
+        
+    }
     // ------------------------WINDOW INTERACTIONS-------------------------- //
     $('#pool_status').on('click', get_pool);
     $('#login').on('click', login);
@@ -180,5 +159,4 @@ $(document).ready(() => {
         get_countdown_timer();
         get_nave_status();
     })
-    // ------------------------WINDOW INTERACTIONS-------------------------- //
 });

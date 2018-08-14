@@ -2,11 +2,11 @@ var Mongo = require('./mongo.js');
 var database = new Mongo();
 
 var Game = require('./game.js');
-var game;
+var game = new Game(database);;
 
 database.connect((db) => {
-    game = new Game(database);
-})
+    game.start();
+});
 
 // TODO: LIMITAR O CORS PRO SITE FINAL
 var cors = require('cors');
@@ -26,8 +26,6 @@ app.use(express.static('public'));
 app.get('/', (request, response) => {
     //response.sendFile(project_path + 'index.html');
 });
-//----------------------------------INDEX-------------------------------------//
-
 //----------------------------------POOL-------------------------------------//
 // RETRIEVE OBJECT COM OS VOTOS
 app.get('/get-pool', (request, response) => {
@@ -64,8 +62,6 @@ app.post('/vote', (request, response) => {
             });
     });
 });
-//----------------------------------POOL-------------------------------------//
-
 //----------------------------------USER-------------------------------------//
 app.post('/login', (request, response) => {
     var username = request.body.username;
@@ -92,9 +88,7 @@ app.post('/split', (request, response) => {
     database.split_pp(request.body.user_id, request.body.pp_to_split, (result) => {
         response.send(result);
     })
-})
-//----------------------------------USER-------------------------------------//
-
+});
 //----------------------------------TIMERS-------------------------------------//
 app.get('/countdown_timer', (request, response) => {
     response.send(game.get_cd_timer().get_timer());
@@ -108,14 +102,10 @@ app.get('/reduce_deadline', (request, response) => {
 app.get('/deadline', (request, response) => {
     response.send(game.get_deadline_timer().get_timer());
 });
-//----------------------------------TIMERS-------------------------------------//
-
 //----------------------------------NAVE-------------------------------------//
 app.get('/nave', (request, response) => {
     response.send(game.get_nave());
 });
-//----------------------------------NAVE-------------------------------------//
-
 //----------------------------------ESSENCIALS-------------------------------------//
 app.post('/essencials', (request, response) => {
     var user_id = request.body.user_id;
@@ -123,4 +113,3 @@ app.post('/essencials', (request, response) => {
         response.send(essencials);
     });
 });
-//----------------------------------ESSENCIALS-------------------------------------//

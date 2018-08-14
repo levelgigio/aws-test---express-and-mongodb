@@ -21,8 +21,6 @@ module.exports = class Mongo {
     save_pool(cpool) {
         this.db.db('prizeship').collection('pool').update( { pool: {$exists: true}}, {$set : {pool : cpool}});
     }
-    //---------------------------POOL------------------------------//
-
     //-----------------------------USER------------------------------//
     // testar, se funfar, arrumar a pool_state pq ta usando find em vez de findOne
     search_user_by_id(user_id, callback) {
@@ -78,8 +76,6 @@ module.exports = class Mongo {
                 callback("nao tinha pp o suficiente")
         });
     }
-    //-----------------------------USER---------------------------------//
-
     //---------------------------TIMERS---------------------------------//
     // TODO: TALVEZ TIRAR O UPSERT
     save_time(timer) {
@@ -98,8 +94,6 @@ module.exports = class Mongo {
                     callback(array[0]);
         });
     }
-    //-------------------------------TIMERS---------------------------------//
-
     //----------------------------------NAVE-------------------------------------//
     get_nave(callback) {
         this.db.db('prizeship').collection('nave').find( { nave: {$exists: true} } ).toArray((error, array) => {
@@ -114,8 +108,6 @@ module.exports = class Mongo {
     save_nave(nave) {
         this.db.db('prizeship').collection('nave').update( { nave: {$exists: true}}, {$set : {nave: nave}});
     }
-    //------------------------------NAVE----------------------------------//
-
     //------------------------------ESSENCIALS--------------------------------//
     get_essencials(user_id, callback) {
         this.db.db('prizeship').collection('pool').find({ pool: {$exists: true}}).toArray((error, array) => {
@@ -159,8 +151,6 @@ module.exports = class Mongo {
         });*/
         
     }
-    //------------------------------ESSENCIALS----------------------------//
-
     //------------------------CONNECTION------------------------//
     connect(callback) {
         var obj = this;
@@ -175,5 +165,4 @@ module.exports = class Mongo {
             //db.close();
         });
     }
-    //-----------------------CONNECTION----------------------------//
 }
