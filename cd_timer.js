@@ -8,6 +8,15 @@ module.exports = function(game) {
     //-------------------METHODS---------------------//
     var obj = this;
     this.begin = function() {
+        
+        
+        var hours = Math.floor((obj.timer.values.tempo_restante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((obj.timer.values.tempo_restante % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((obj.timer.values.tempo_restante % (1000 * 60)) / 1000);
+        console.log("TEMPO ATE FECHAR A VOTACAO: " + hours + "h " + minutes + "m " + seconds + "s ");
+        
+        
+        
         delete obj.now;
         obj.now = new Date().getTime();
         var tempo = obj.timer.values.duration + obj.timer.values.reference - obj.now;

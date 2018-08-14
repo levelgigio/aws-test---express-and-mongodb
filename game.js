@@ -17,6 +17,10 @@ module.exports = function(database) {
         this.nave.set_nave(nave);
         this.saver.add_nave(this.nave);
     });
+    
+    this.get_nave = function() {
+        return this.nave;
+    }
     // ------------------------------NAVE-----------------------------//
     
     // ------------------------------POOL-----------------------------//
@@ -40,7 +44,7 @@ module.exports = function(database) {
     this.CDTimer = require('./cd_timer.js');
     this.cd_timer = new this.CDTimer(this);
 
-    //this.cd_timer.start_new(15000, "countdowntimer"); 
+    //this.cd_timer.start_new(60000, "countdowntimer"); 
     //setTimeout(this.cd_timer.begin, 100);
     //this.saver.add_timer(this.cd_timer);
     

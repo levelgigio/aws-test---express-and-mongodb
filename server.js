@@ -2,8 +2,14 @@ var Mongo = require('./mongo.js');
 var database = new Mongo();
 
 var Game = require('./game.js');
-var game = new Game(database);
+var game;
 
+database.connect((db) => {
+    game = new Game(database);
+})
+
+// TODO: LIMITAR O CORS PRO SITE FINAL
+var cors = require('cors');
 var express = require('express');
 var app = express();
 app.listen(3000);
@@ -11,6 +17,7 @@ app.listen(3000);
 var body_parser = require('body-parser');
 app.use(body_parser.urlencoded({ extended: false }));
 app.use(body_parser.json());
+app.use(cors());
 
 app.use(express.static('public'));
 
@@ -109,11 +116,11 @@ app.get('/nave', (request, response) => {
 });
 //----------------------------------NAVE-------------------------------------//
 
-//----------------------------------EVERYTHING-------------------------------------//
-app.post('/everything', (request, response) => {
+//----------------------------------ESSENCIALS-------------------------------------//
+app.post('/essencials', (request, response) => {
     var user_id = request.body.user_id;
-    database.get_everything(user_id, (everything) => {
-        response.send(everything);
+    database.get_essencials(user_id, (essencials) => {
+        response.send(essencials);
     });
 });
-//----------------------------------EVERYTHING-------------------------------------//
+//----------------------------------ESSENCIALS-------------------------------------//
