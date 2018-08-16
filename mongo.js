@@ -1,9 +1,12 @@
+// TODO: ELSE IF(ARRAY) NOS FIND.TOARRAY
+
 module.exports = class Mongo {
 
     constructor() {
         this.mongo = require('mongodb').MongoClient;
         this.ObjectId = require('mongodb').ObjectId; 
-        this.db;
+        
+        this.db; // RECEBE A DATABASE E MANTEM A CONEXAO ABERTA (ver this.connect)
         this.essencials_obj = {};
     }
 
@@ -51,7 +54,8 @@ module.exports = class Mongo {
             else
                 if(array.length)
                     callback({
-                        status: array[0]._id
+                        status: "ok",
+                        user_id: array[0]._id
                     }); // retorna o id do usuario com esse username e senha
             else
                 callback({
@@ -70,10 +74,14 @@ module.exports = class Mongo {
                 user.pp -= quant;
                 user.ip += quant*10;
                 this.update_user(user_id, user);
-                console.log("user depois de split: ", user);
-                callback("splitou " + quant + " pp");
+                callback({
+                    status: "ok",
+                    user: user
+                });
             } else
-                callback("nao tinha pp o suficiente")
+                callback({
+                    status: "not enough pp"
+                });
         });
     }
     //---------------------------TIMERS---------------------------------//
@@ -109,46 +117,53 @@ module.exports = class Mongo {
         this.db.db('prizeship').collection('nave').update( { nave: {$exists: true}}, {$set : {nave: nave}});
     }
     //------------------------------ESSENCIALS--------------------------------//
+    
+    // TODO: ASSINCRONO TA FUDENDO
     get_essencials(user_id, callback) {
+        var id = new this.ObjectId(user_id);
+        this.db.db('prizeship').collection('users').find({ _id: id}).toArray((error, array) => {
+            if (error)
+                console.log("ERRO AO COLOCAR USER NA ARRAY: ", error);
+            else {
+                this.essencials_obj.user = array[0].user; //PUBLIC
+                this.essencials_obj.user.id = array[0]._id;
+            }
+                
+        });
+        
         this.db.db('prizeship').collection('pool').find({ pool: {$exists: true}}).toArray((error, array) => {
             if (error)
-                console.log("ERRO AO COLOCAR EM ARRAY USER: ", error);
-            else {
-                this.essencials_obj.pool = array[0];
-                callback(this.essencials_obj);
-            }
+                console.log("ERRO AO COLOCAR EM ARRAY POOL: ", error);
+            else 
+                this.essencials_obj.pool = array[0].pool;
         });
         
         this.db.db('prizeship').collection('timers').find({ timer_label: "deadlinetimer"}).toArray((error, array) => {
             if (error)
-                console.log("ERRO AO COLOCAR EM ARRAY TIMERS: ", error);
+                console.log("ERRO AO COLOCAR EM ARRAY DL TIMER: ", error);
             else
-                this.essencials_obj.deadline = array[0];
+                this.essencials_obj.deadline = array[0].values;
         });
         
-        /*this.db.db('prizeship').collection('nave').find({ nave: {$exists: true}}).toArray((error, array) => {
+        this.db.db('prizeship').collection('timers').find({ timer_label: "countdowntimer"}).toArray((error, array) => {
+            if (error)
+                console.log("ERRO AO COLOCAR EM ARRAY CD TIMER: ", error);
+            else
+                this.essencials_obj.countdown = array[0].values;
+        });
+        
+        this.db.db('prizeship').collection('nave').find({ nave: {$exists: true}}).toArray((error, array) => {
             if (error)
                 console.log("ERRO AO COLOCAR EM ARRAY NAVE: ", error);
             else
-                this.essencials_obj.nave = array[0];
-        });*/
-
-        /*this.db.db('prizeship').collection('pool').find({ pool: {$exists: true}}).toArray((error, array) => {
-            if (error)
-                console.log("ERRO AO COLOCAR EM ARRAY POOL: ", error);
-            else
-                this.essencials_obj.pool = array[0];
-        });*/
-
-        /*var id = new this.ObjectId(user_id);
-        this.db.db('prizeship').collection('users').find({ _id: id}).toArray((error, array) => {
-            if (error)
-                console.log("ERRO AO COLOCAR EM ARRAY USER: ", error);
-            else {
-                this.essencials_obj.user = array[0];
-                callback(this.essencials_obj);
-            }
-        });*/
+                {
+                    this.essencials_obj.nave = array[0].nave;
+                    console.log("essencials: ", this.essencials_obj);
+                    callback(this.essencials_obj);
+                }
+                
+        });
+        
         
     }
     //------------------------CONNECTION------------------------//

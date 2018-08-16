@@ -1,4 +1,4 @@
-module.exports = function(database) {
+module.exports = function(database, sockets) {
     //--------------------------VARIABLES AND METHODS------------------------- //
     this.database = database;
     //--------------------------TIMER SAVER------------------------- //
@@ -16,7 +16,7 @@ module.exports = function(database) {
     this.pool = new this.Pool(this);
 
     this.get_pool = function() {
-        return this.pool;
+        return this.pool.get_pool();
     }
     //--------------------------CD TIMER------------------------- //
     this.CDTimer = require('./cd_timer.js');
@@ -33,41 +33,49 @@ module.exports = function(database) {
         return this.deadline_timer;
     }
     //--------------------------START------------------------- //
-    this.start = function() {
+    this.start = function(start_new) {
         // ------------------------------NAVE-----------------------------//
-        //this.nave.start_new();
-        //this.saver.add_nave(this.nave);
-
-        this.database.get_nave((nave) => {
-            this.nave.set_nave(nave);
+        if(start_new) {
+            this.nave.start_new();
             this.saver.add_nave(this.nave);
-        });
+        } 
+        else
+            this.database.get_nave((nave) => {
+                this.nave.set_nave(nave);
+                this.saver.add_nave(this.nave);
+            });
         // ------------------------------POOL-----------------------------//
-        //this.pool.start_new();
-        //this.saver.add_pool(this.pool);
-
-        this.database.get_pool((pool) => {
-            this.pool.set_pool(pool);
+        if(start_new) {
+            this.pool.start_new();
             this.saver.add_pool(this.pool);
-        });
+        }
+        else
+            this.database.get_pool((pool) => {
+                this.pool.set_pool(pool);
+                this.saver.add_pool(this.pool);
+            });
         //--------------------------CD TIMER------------------------- //
-        //this.cd_timer.start_new(60000, "countdowntimer"); 
-        //setTimeout(this.cd_timer.begin, 100);
-        //this.saver.add_timer(this.cd_timer);
-
-        this.database.get_timer("countdowntimer", (timer) => {
-            this.cd_timer.set_timer(timer);
+        if(start_new) {
+            this.cd_timer.start_new(60000, "countdowntimer"); 
             setTimeout(this.cd_timer.begin, 100);
             this.saver.add_timer(this.cd_timer);
-        });
+        }
+        else
+            this.database.get_timer("countdowntimer", (timer) => {
+                this.cd_timer.set_timer(timer);
+                setTimeout(this.cd_timer.begin, 100);
+                this.saver.add_timer(this.cd_timer);
+            });
         //--------------------------DEADLINE TIMER------------------------- //
-        //this.deadline_timer.start_new(365, "deadlinetimer");
-        //this.saver.add_timer(this.deadline_timer);
-
-        this.database.get_timer("deadlinetimer", (timer) => {
-            this.deadline_timer.set_timer(timer);
+        if(start_new) {
+            this.deadline_timer.start_new(365, "deadlinetimer");
             this.saver.add_timer(this.deadline_timer);
-        });
+        }
+        else
+            this.database.get_timer("deadlinetimer", (timer) => {
+                this.deadline_timer.set_timer(timer);
+                this.saver.add_timer(this.deadline_timer);
+            });
         //--------------------------SAVER------------------------- //
         setTimeout(this.saver.save, 10000);
     }

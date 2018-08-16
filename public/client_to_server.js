@@ -1,153 +1,141 @@
 $(document).ready(() => {
 
-    // -----------------------SERVER INTERACTIONS------------------------ //
-    //-----------------------POOL---------------------------//
-    function get_pool() {
-        $.get(window.location.protocol + "//" + window.location.host + '/get-pool', (pool) => {
-            console.log(pool);
-        });
-    }
+    // -----------------------CLIENT VARIABLES AND GAME-------------------- //
+    var nave = new Nave(horse_json);
+    nave.animate("horse_run", true);
+    var essencials;
 
+    setTimeout(() => {
+        setInterval(update, 300);
+    }, 1000);
+    // -----------------------SERVER INTERACTIONS------------------------ //
+    // -----------------------SOCKET-------------------- //
+    var socket = io.connect(window.location.protocol + "//" + window.location.host);
+
+    // -----------------------SOCKET RECEIVERS-------------------- //
+    socket.on('update_pool', (response) => {
+        if(essencials)
+            essencials.pool = response.pool;
+        console.log("pool: ", response.pool);
+    });
+
+    socket.on('update_user', (response) => {
+        //atualizar o objeto enorme que loopa mostrando na tela (update)
+        if(essencials)
+            essencials.user = response.user;
+        console.log("user: ", response.user);
+    });
+
+    socket.on('update_nave', (response) => {
+        //atualizar o objeto enorme que loopa mostrando na tela (update)
+        if(essencials)
+            essencials.nave = response.nave;
+        console.log("nave: ", response.nave);
+    });
+
+    socket.on('update_deadline', (response) => {
+        //atualizar o objeto enorme que loopa mostrando na tela (update)
+        if(essencials)
+            essencials.deadline = response.deadline;
+        console.log("deadline: ", response.deadline);
+    });
+
+    socket.on('update_countdown', (response) => {
+        //atualizar o objeto enorme que loopa mostrando na tela (update)
+        if(essencials)
+            essencials.countdown = response.countdown;
+        console.log("countdown: ", response.countdown);
+    });
+
+    socket.on('essencials', (cessencials) => {
+        //atualizar o objeto enorme que loopa mostrando na tela (update)
+        essencials = cessencials;
+        console.log("essencials: ", cessencials);
+    })
+    //-----------------------POOL---------------------------//
     function vote(voto) {
-        $.post(window.location.protocol + "//" + window.location.host + '/vote', {
-            user: user_id,
-            ip: 1,
-            voto: voto
-        }, (response) => {
-            console.log("user: ", response);
-        });
+        if(essencials)
+            socket.emit('vote', {
+                user_id: essencials.user.id,
+                ip_spent: 1,
+                voto: voto
+            });
     }
     //-----------------------USER---------------------------//
     function login() {
         var username = $('#username').val();
         var pwd = $('#pwd').val();
-        $.post(window.location.protocol + "//" + window.location.host + '/login', {
+        socket.emit('login', {
             username: username,
             pwd: pwd
-        }, (response) => {
-            if(response.status !== "not found")
-                user_id = response.status;
-            console.log(response.status);     
-        });
-    }
-    
-    function get_user_by_id(user_id, callback) {
-        $.post(window.location.protocol + "//" + window.location.host + '/user', {
-            user_id: user_id,
-        }, (user) => {
-            callback(user)
         });
     }
 
     function split_pp(user_id, quant) {
-        $.post(window.location.protocol + "//" + window.location.host + '/split', {
-            user_id: user_id,
-            pp_to_split: quant
-        }, (response) => {
-            console.log(response);
-        })
+        if(essencials)
+            socket.emit('split', {
+                user_id: user_id,
+                pp_to_split: quant
+            });
     }
     //-----------------------TIMERS---------------------------//
     function reduce_deadline() {
-        $.get(window.location.protocol + "//" + window.location.host + '/reduce_deadline', (timer) => {
-            console.log(timer);
-        });
-    }
-
-    function get_deadline() {
-
-    }
-
-    function get_countdown_timer(callback) {
-        $.get(window.location.protocol + "//" + window.location.host + '/countdown_timer', (timer) => {
-            cd_timer = timer;
-            //console.log(cd_timer.values.tempo_restante);
-            if(callback)
-                callback();
-        });
+        socket.emit('reduce');
     }
     //-----------------------NAVE---------------------------//
-    function get_nave_status() {
-        $.get(window.location.protocol + "//" + window.location.host + '/nave', (nave) => {
-            nave_status = nave.nave;
-        });
-    }
     //-----------------------UPDATE---------------------------//
-    function get_essencials(callback) {
-        $.post(window.location.protocol + "//" + window.location.host + '/essencials', { user_id: user_id }, (everything) => {
-            callback(everything);
-        });
-    }
 
     function update() {
-        if(cd_timer) {
-            cd_timer.values.tempo_restante -= 300;
-            if(cd_timer.values.tempo_restante <= 0) {
-                cd_timer.values.tempo_restante = 0;
-                get_countdown_timer();
-                get_nave_status();
-            } 
-            else
-                show_countdown_time(cd_timer);
-        }
-        show_altitude(nave_status.altitude);
-        get_essencials((essencials) => {
-            show_deadline(essencials.deadline);
+        console.log(essencials);
+        if(essencials) {
+            show_nave(essencials.nave);
             show_pool(essencials.pool);
-        });
+            show_deadline(essencials.deadline);
+            show_countdown_time(essencials.countdown);
+        }
     }
     // -----------------------SERVER INTERACTIONS------------------------ //
 
-    // -----------------------CLIENT VARIABLES AND GAME-------------------- //
-    var user_id = '5b70b7beab615423d8261bab';
-    var cd_timer;
-    var nave_status;
-    get_nave_status();
-    var nave = new Nave(horse_json);
-    //nave.animate("horse_run", true);
-
-    setTimeout(() => {
-        get_countdown_timer(() => {
-            setInterval(update, 300);
-        })
-    }, 1000);
     // ------------------------SHOW VARIABLES-------------------------- //
     function show_countdown_time(timer) {
-        var hours = Math.floor((timer.values.tempo_restante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var minutes = Math.floor((timer.values.tempo_restante % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds = Math.floor((timer.values.tempo_restante % (1000 * 60)) / 1000);
+        timer.tempo_restante -= 300;
+        if (timer.tempo_restante <= 0)
+            timer.tempo_restante = 0;
+        var hours = Math.floor((timer.tempo_restante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((timer.tempo_restante % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((timer.tempo_restante % (1000 * 60)) / 1000);
 
         $('#countdown_time').text("TEMPO ATE FECHAR A VOTACAO: " + hours + "h " + minutes + "m " + seconds + "s ")
     }
 
     function show_deadline(deadline) {
-        $('#deadline').text(deadline.values.deadline);
+        $('#deadline').text(deadline.deadline);
     }
 
-    function show_altitude(altitude) {
+    function show_nave(cnave) {
         if( Number($("#altitude-nave").text()))
-            if( Number($("#altitude-nave").text()) > altitude)
+            if( Number($("#altitude-nave").text()) > cnave.altitude)
                 nave.animate("horse_bend");
-            else if ( Number($("#altitude-nave").text()) < altitude )
+            else if ( Number($("#altitude-nave").text()) < cnave.altitude )
                 nave.animate("horse_jump");
 
-        $("#altitude-nave").text(altitude);
+        $("#altitude-nave").text(cnave.altitude);
     }
 
     function show_pool(pool) {
-        $("#pool_subir").text("SUBIR: " + pool.pool.subir);
-        $("#pool_descer").text("DESCER: " + pool.pool.descer);
+        $("#pool_subir").text("SUBIR: " + pool.subir);
+        $("#pool_descer").text("DESCER: " + pool.descer);
     }
-    
+
     function show_user(user) {
-        
+
     }
     // ------------------------WINDOW INTERACTIONS-------------------------- //
-    $('#pool_status').on('click', get_pool);
     $('#login').on('click', login);
     $('#reduce_deadline').on('click', reduce_deadline);
     $('#split_pp').on('click', () => {
-        split_pp(user_id, 1);
+        if(essencials)
+            split_pp(essencials.user.id, 1);
     });
     $('#vote_descer').on('click', () => {
         vote("descer"); 
@@ -155,8 +143,10 @@ $(document).ready(() => {
     $('#vote_subir').on('click', () => {
         vote("subir");
     });
-    $(window).focus(function() {
-        get_countdown_timer();
-        get_nave_status();
-    })
+    /*$(window).focus(function() {
+        if(essencials)
+            socket.emit('get_essencials', {
+                user_id: essencials.user.id
+            });
+    })*/
 });
