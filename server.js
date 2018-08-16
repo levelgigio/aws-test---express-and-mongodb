@@ -1,13 +1,3 @@
-var Mongo = require('./mongo.js');
-var database = new Mongo();
-
-var Game = require('./game.js');
-var game = new Game(database);;
-
-database.connect((db) => {
-    game.start(false);
-});
-
 // TODO: LIMITAR O CORS PRO SITE FINAL
 var cors = require('cors');
 var express = require('express');
@@ -15,8 +5,21 @@ var socket = require('socket.io');
 var app = express();
 var server = app.listen(3000);
 
-
 var io = socket(server);
+
+var Mongo = require('./mongo.js');
+var database = new Mongo();
+
+var Game = require('./game.js');
+var game = new Game();
+
+game.set_database(database);
+game.set_sockets(io);
+
+database.connect((db) => {
+    game.start(false);
+});
+
 io.sockets.on('connection', (socket) => {
 
     socket.on('login', (data) => {
@@ -28,9 +31,11 @@ io.sockets.on('connection', (socket) => {
 
         // funcao mongo retorna um objeto com status e possivelmente um id
         database.user_login(user_credentials, (response) => {
-            console.log("user id: ", response.user_id);
+            console.log("user: ", response.user);
             if(response.status === "ok")
-                database.get_essencials(response.user_id, (essencials) => {
+                database.get_essencials((essencials) => {
+                    essencials.user = response.user;
+                    essencials.user.id = response.user_id;
                     io.to(socket.id).emit('essencials', essencials);
                 });
         });

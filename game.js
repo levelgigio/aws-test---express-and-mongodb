@@ -1,9 +1,30 @@
-module.exports = function(database, sockets) {
+module.exports = function() {
     //--------------------------VARIABLES AND METHODS------------------------- //
-    this.database = database;
+    this.database;
+    this.sockets;
+
+    
+    //--------------------------DATABASE------------------------- //
+    this.set_database = function(database) {
+        this.database = database;
+        this.saver.set_database(database);
+    }
+    
+    this.get_database = function() {
+        return this.database;
+    }
+    //--------------------------SOCKETS------------------------- //
+    this.set_sockets = function(io) {
+        this.sockets = io.sockets;
+    }
+    
+    this.get_sockets = function() {
+        return this.sockets;
+    }
     //--------------------------TIMER SAVER------------------------- //
     this.Saver = require('./saver.js');
-    this.saver = new this.Saver(this.database, 200);
+    this.saver = new this.Saver(200);
+    // precisa setar a database do saver
     // ------------------------------NAVE-----------------------------//
     this.Nave = require('./nave.js');
     this.nave = new this.Nave();

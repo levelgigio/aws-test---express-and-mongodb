@@ -1,6 +1,6 @@
-module.exports = function(db, how_often) {
+module.exports = function(how_often) {
     //-------------------VARIABLES---------------------//
-    this.database = db;
+    this.database;
     this.timers = [];
     this.pool = [];
     this.nave = [];
@@ -33,6 +33,10 @@ module.exports = function(db, how_often) {
     
     this.add_nave = function(nave) {
         this.nave.push(nave);
+    }
+    
+    this.set_database = function(database) {
+        this.database = database;
     }
     //-------------------METHODS---------------------//
 }

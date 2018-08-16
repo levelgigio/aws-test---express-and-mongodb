@@ -86,7 +86,6 @@ $(document).ready(() => {
     //-----------------------UPDATE---------------------------//
 
     function update() {
-        console.log(essencials);
         if(essencials) {
             show_nave(essencials.nave);
             show_pool(essencials.pool);

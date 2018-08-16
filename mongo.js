@@ -55,6 +55,7 @@ module.exports = class Mongo {
                 if(array.length)
                     callback({
                         status: "ok",
+                        user: array[0].user,
                         user_id: array[0]._id
                     }); // retorna o id do usuario com esse username e senha
             else
@@ -117,20 +118,8 @@ module.exports = class Mongo {
         this.db.db('prizeship').collection('nave').update( { nave: {$exists: true}}, {$set : {nave: nave}});
     }
     //------------------------------ESSENCIALS--------------------------------//
-    
     // TODO: ASSINCRONO TA FUDENDO
-    get_essencials(user_id, callback) {
-        var id = new this.ObjectId(user_id);
-        this.db.db('prizeship').collection('users').find({ _id: id}).toArray((error, array) => {
-            if (error)
-                console.log("ERRO AO COLOCAR USER NA ARRAY: ", error);
-            else {
-                this.essencials_obj.user = array[0].user; //PUBLIC
-                this.essencials_obj.user.id = array[0]._id;
-            }
-                
-        });
-        
+    get_essencials(callback) {
         this.db.db('prizeship').collection('pool').find({ pool: {$exists: true}}).toArray((error, array) => {
             if (error)
                 console.log("ERRO AO COLOCAR EM ARRAY POOL: ", error);
@@ -161,10 +150,7 @@ module.exports = class Mongo {
                     console.log("essencials: ", this.essencials_obj);
                     callback(this.essencials_obj);
                 }
-                
         });
-        
-        
     }
     //------------------------CONNECTION------------------------//
     connect(callback) {
