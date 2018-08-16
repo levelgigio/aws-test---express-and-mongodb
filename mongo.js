@@ -5,7 +5,7 @@ module.exports = class Mongo {
     constructor() {
         this.mongo = require('mongodb').MongoClient;
         this.ObjectId = require('mongodb').ObjectId; 
-        
+
         this.db; // RECEBE A DATABASE E MANTEM A CONEXAO ABERTA (ver this.connect)
         this.essencials_obj = {};
     }
@@ -15,9 +15,14 @@ module.exports = class Mongo {
         this.db.db('prizeship').collection('pool').find( { pool: { $exists: true } }).toArray( (error, array) => {
             if(error)
                 console.log("error: ", error);
+            else if(callback) {
+                if(array.length)
+                    callback(array[0].pool); // precisa existir apenas um objeto com a key "pool"
+                else
+                    console.log("MONGO NAO ACHOU A POOL");
+            }
             else
-                //TESTAR O PONTO POOL
-                callback(array[0].pool); // precisa existir apenas um objeto com a key "pool"
+                console.log("CALLBACK INVALIDA");
         });
     } 
 
@@ -31,38 +36,57 @@ module.exports = class Mongo {
         this.db.db('prizeship').collection('users').find( { _id: id } ).toArray( (error, array) => {
             if(error)
                 console.log("ERRO AO PASSAR PRA ARRAY OS USERS", error);
+            else if(callback) {
+                if(array.length)
+                    callback({
+                        status: "ok",
+                        user: array[0].user
+                    });
+                else
+                    callback({
+                        status: "user not found"
+                    });
+            }
             else
-                callback(array[0].user);
+                console.log("CALLBACK INVALIDA");
         });
     }
 
     update_user(user_id, user) {
         var id = new this.ObjectId(user_id);
-        this.db.db('prizeship').collection('users').update( { _id : id}, {user: user});
+        if(user && user_id)
+            this.db.db('prizeship').collection('users').update( { _id : id}, {user: user});
     }
 
     user_spent_ip(user_id, quant, callback) {
-        var id = new this.ObjectId(user_id);
-        this.db.db('prizeship').collection('users').update( { _id : id}, {$inc: {"user.ip": -quant, "user.ip_spent": quant}});
-        callback();
+        if(user_id && quant) {
+            var id = new this.ObjectId(user_id);
+            this.db.db('prizeship').collection('users').update( { _id : id}, {$inc: {"user.ip": -quant, "user.ip_spent": quant}});
+            if (callback)
+                callback();
+        } 
     }
 
     user_login(user, callback) {
-        this.db.db('prizeship').collection('users').find( { "user.username": user.username, "user.pwd": user.pwd} ).toArray((error, array) => {
-            if(error)
-                console.log("ERRO AO PASSAR PRA ARRAY OS USERS", error);
-            else
-                if(array.length)
-                    callback({
-                        status: "ok",
-                        user: array[0].user,
-                        user_id: array[0]._id
-                    }); // retorna o id do usuario com esse username e senha
-            else
-                callback({
-                    status: "not found"
-                });
-        });
+        if(user) {
+            this.db.db('prizeship').collection('users').find( { "user.username": user.username, "user.pwd": user.pwd} ).toArray((error, array) => {
+                if(error)
+                    console.log("ERRO AO PASSAR PRA ARRAY OS USERS", error);
+                else if(callback)
+                    if(array.length)
+                        callback({
+                            status: "ok",
+                            user: array[0].user,
+                            user_id: array[0]._id
+                        }); // retorna o id do usuario com esse username e senha
+                    else
+                        callback({
+                            status: "not found"
+                        });
+                else
+                    console.log("CALLBACK INVALIDA");
+            });
+        }
     }
 
     distribute_ip_winners(pool) {
@@ -70,38 +94,60 @@ module.exports = class Mongo {
     }
 
     split_pp(user_id, quant, callback) {
-        this.search_user_by_id(user_id, (user) => {
-            if(user.pp >= quant) {
-                user.pp -= quant;
-                user.ip += quant*10;
-                this.update_user(user_id, user);
-                callback({
-                    status: "ok",
-                    user: user
-                });
-            } else
-                callback({
-                    status: "not enough pp"
-                });
-        });
+        if(user_id && quant) {
+            this.search_user_by_id(user_id, (response) => {
+                if(callback)
+                    if(response.status === "ok")
+                        if(response.user.pp >= quant) {
+                            response.user.pp -= quant;
+                            response.user.ip += quant*10;
+                            this.update_user(user_id, response.user);
+                            callback({
+                                status: "ok",
+                                user: response.user
+                            });
+                        } 
+                        else
+                            callback({
+                                status: "not enough pp"
+                            });
+                    else
+                        callback({
+                            status: "user not found"
+                        });
+                else
+                    console.log("CALLBACK INVALIDA");
+            });
+        }
     }
     //---------------------------TIMERS---------------------------------//
     // TODO: TALVEZ TIRAR O UPSERT
     save_time(timer) {
-        this.db.db('prizeship').collection('timers').update({timer_label: timer.timer_label}, {$set: {values: timer.values}}, {upsert: true}, (error) => {
-            if(error)
-                console.log("ERRO AO SALVAR TIMERS: ", err);
-        });
+        if(timer)
+            this.db.db('prizeship').collection('timers').update({timer_label: timer.timer_label}, {$set: {values: timer.values}}, {upsert: true}, (error) => {
+                if(error)
+                    console.log("ERRO AO SALVAR TIMERS: ", err);
+            });
+        else
+            console.log("SAVING UNDEFINED TIMER");
     }
 
     get_timer(label, callback) {
-        this.db.db('prizeship').collection('timers').find( { timer_label: label }).toArray((error, array) => {
-            if(error)
-                console.log("ERRO AO PASSAR PRA ARRAY OS TIMERS", error);
-            else
-                if(array.length)
-                    callback(array[0]);
-        });
+        if(label)
+            this.db.db('prizeship').collection('timers').find( { timer_label: label }).toArray((error, array) => {
+                if(error)
+                    console.log("ERRO AO PASSAR PRA ARRAY OS TIMERS", error);
+                else
+                    if(array.length)
+                        if(callback)
+                            callback(array[0]);
+                        else
+                            console.log("CALBACK INVALIDA");
+                else
+                    console.log("TIMER NOT FOUND");
+            });
+        else
+            console.log("LABEL INVALIDA");
     }
     //----------------------------------NAVE-------------------------------------//
     get_nave(callback) {
@@ -110,12 +156,20 @@ module.exports = class Mongo {
                 console.log("ERRO AO PASSAR PRA ARRAY A NAVE", error);
             else
                 if(array.length)
-                    callback(array[0].nave);
+                    if(callback)
+                        callback(array[0].nave);
+                    else
+                        console.log("CALBACK INVALIDA");
+            else
+                console.log("NAVE NOT FOUND");
         });
     }
 
     save_nave(nave) {
-        this.db.db('prizeship').collection('nave').update( { nave: {$exists: true}}, {$set : {nave: nave}});
+        if(nave)
+            this.db.db('prizeship').collection('nave').update( { nave: {$exists: true}}, {$set : {nave: nave}});
+        else
+            console.log("SAVING UNDEFINED NAVE");
     }
     //------------------------------ESSENCIALS--------------------------------//
     // TODO: ASSINCRONO TA FUDENDO
@@ -123,33 +177,43 @@ module.exports = class Mongo {
         this.db.db('prizeship').collection('pool').find({ pool: {$exists: true}}).toArray((error, array) => {
             if (error)
                 console.log("ERRO AO COLOCAR EM ARRAY POOL: ", error);
-            else 
+            else if(array.length)
                 this.essencials_obj.pool = array[0].pool;
+            else
+                console.log("POOL NOT FOUND");
         });
-        
+
         this.db.db('prizeship').collection('timers').find({ timer_label: "deadlinetimer"}).toArray((error, array) => {
             if (error)
                 console.log("ERRO AO COLOCAR EM ARRAY DL TIMER: ", error);
-            else
+            else if(array.length)
                 this.essencials_obj.deadline = array[0].values;
+            else
+                console.log("TIMER NOT FOUND");
         });
-        
+
         this.db.db('prizeship').collection('timers').find({ timer_label: "countdowntimer"}).toArray((error, array) => {
             if (error)
                 console.log("ERRO AO COLOCAR EM ARRAY CD TIMER: ", error);
-            else
+            else if(array.length)
                 this.essencials_obj.countdown = array[0].values;
+            else
+                console.log("TIMER NOT FOUND");
         });
-        
+
         this.db.db('prizeship').collection('nave').find({ nave: {$exists: true}}).toArray((error, array) => {
             if (error)
                 console.log("ERRO AO COLOCAR EM ARRAY NAVE: ", error);
-            else
-                {
-                    this.essencials_obj.nave = array[0].nave;
-                    console.log("essencials: ", this.essencials_obj);
+            else if(array.length)
+            {
+                this.essencials_obj.nave = array[0].nave;
+                if(callback)
                     callback(this.essencials_obj);
-                }
+                else
+                    console.log("CALLBACK INVALIDA");
+            }
+            else
+                console.log("NAVE NOT FOUND");
         });
     }
     //------------------------CONNECTION------------------------//
@@ -160,8 +224,10 @@ module.exports = class Mongo {
                 console.log("ERRO AO CONECTAR AO MONGO DB: ", error);
             else {
                 obj.db = db;
-                console.log(db);
-                callback(db);
+                if(callback)
+                    callback(db);
+                else
+                    console.log("CALLBACK INVALIDA");
             }    
             //db.close();
         });

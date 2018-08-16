@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <!-- JQUERY CDN -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <!-- SOCKET.IO CDN -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js"></script>
+        <!-- CLIENT SIDE TO SERVER INTERACTION FUNCTIONS -->
+        <script src="client_to_server.js" type="text/javascript"></script>
+        <!-- CLIENT SIDE ONLY FUNCTIONS-->
+        <script src="nave.js" type="text/javascript"></script>
+        <script src="horse_json.js"></script>
+        <!-- <link rel="stylesheet" href="style.css"> -->
+    </head>
+
+    <body>
+        ALTITUDE: <p id="altitude-nave"></p>
+
+        <div id="animation">
+            <div class="spaceship">
+                <div class="antenna"></div>
+                <div class="body"></div>
+                <div class="window"></div>
+                <div class="fins"></div>
+                <div class="rocket"></div>
+                <div class="fireWrapper">
+                    <div class="fire">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div>
+            <img id="horse">
+        </div>
+        <br>
+        <p id="pool_subir"></p><p id="pool_descer"></p>
+        <button id="vote_subir">SUBIR</button>
+        <button id="vote_descer">DESCER</button>
+        <input type="range" min="1" max="10" value="1" id="ip_spent">
+        <br>
+        <br>
+        USER IP: <p id="user_ip"></p>
+        <br>
+        <br>
+        <p id="countdown_time"></p>
+        <br>
+        <button id="reduce_deadline">REDUCE</button>
+        <p id="deadline"></p>
+        <br>
+        <button id="split_pp">SPLIT</button>
+
+    </body>
+</html>
