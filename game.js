@@ -2,17 +2,6 @@ module.exports = function() {
     //--------------------------VARIABLES AND METHODS------------------------- //
     this.database;
     this.sockets;
-
-    
-    //--------------------------DATABASE------------------------- //
-    this.set_database = function(database) {
-        this.database = database;
-        this.saver.set_database(database);
-    }
-    
-    this.get_database = function() {
-        return this.database;
-    }
     //--------------------------SOCKETS------------------------- //
     this.set_sockets = function(io) {
         this.sockets = io.sockets;
@@ -24,7 +13,16 @@ module.exports = function() {
     //--------------------------TIMER SAVER------------------------- //
     this.Saver = require('./saver.js');
     this.saver = new this.Saver(200);
-    // precisa setar a database do saver
+    // precisa setar a database do saver 
+    //--------------------------DATABASE------------------------- //
+    this.set_database = function(database) {
+        this.database = database;
+        this.saver.set_database(database); // setando database do saver
+    }
+    
+    this.get_database = function() {
+        return this.database;
+    }
     // ------------------------------NAVE-----------------------------//
     this.Nave = require('./nave.js');
     this.nave = new this.Nave();
@@ -53,6 +51,14 @@ module.exports = function() {
     this.get_deadline_timer = function() {
         return this.deadline_timer;
     }
+    //--------------------------CHART------------------------- //
+    this.Chart = require('./chart.js');
+    this.chart = new this.Chart();
+    
+    this.get_chart = function() {
+        return this.chart;
+    }
+    
     //--------------------------START------------------------- //
     this.start = function(start_new) {
         // ------------------------------NAVE-----------------------------//
@@ -77,7 +83,7 @@ module.exports = function() {
             });
         //--------------------------CD TIMER------------------------- //
         if(start_new) {
-            this.cd_timer.start_new(60000, "countdowntimer"); 
+            this.cd_timer.start_new(20000, "countdowntimer"); 
             setTimeout(this.cd_timer.begin, 100);
             this.saver.add_timer(this.cd_timer);
         }
@@ -96,6 +102,17 @@ module.exports = function() {
             this.database.get_timer("deadlinetimer", (timer) => {
                 this.deadline_timer.set_timer(timer);
                 this.saver.add_timer(this.deadline_timer);
+            });
+        //--------------------------CHART------------------------- //
+        if(start_new) {
+            this.chart.start_new();
+            this.saver.add_chart(this.chart);
+            this.database.clear_chart();
+        }
+        else
+            this.database.get_chart_points((pontos) => {
+                this.chart.set_pontos(pontos);
+                this.saver.add_chart(this.chart);
             });
         //--------------------------SAVER------------------------- //
         setTimeout(this.saver.save, 10000);

@@ -216,6 +216,29 @@ module.exports = class Mongo {
                 console.log("NAVE NOT FOUND");
         });
     }
+    //------------------------CHART------------------------//
+    save_chart_point(ponto) {
+        if(ponto)
+            this.db('prizeship').collection('chart').insert({ponto: ponto});
+        else
+            console.log("SAVING UNDEFINED PONTO");
+    }
+    
+    get_chart_points(callback) {
+        this.db('prizeship').collection('chart').find({ponto: {$exists: true}}).toArray((error, array) => {
+            if(error)
+                console.log("ERROR AO COLOCAR OS PONTOS EM ARRAY: ", error);
+            else if(callback)
+                callback(array);
+            else
+                console.log("CALLBACK INVALIDA");
+        });
+    }
+    
+    clear_chart() {
+        //this.db('prizeship').collection('chart').drop();
+    }
+    
     //------------------------CONNECTION------------------------//
     connect(callback) {
         var obj = this;

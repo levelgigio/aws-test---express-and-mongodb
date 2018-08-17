@@ -4,6 +4,7 @@ module.exports = function(game) {
     this.timer;
     this.now;
     this.reinit_flag = false;
+    this.updated_nave_flag = false;
     //-------------------VARIABLES---------------------//
 
     //-------------------METHODS---------------------//
@@ -21,12 +22,21 @@ module.exports = function(game) {
         delete obj.now;
         obj.now = new Date().getTime();
         var tempo = obj.timer.values.duration + obj.timer.values.reference - obj.now;
+        
+        if(tempo <= obj.timer.values.duration/2 && !obj.updated_nave_flag) {
+            obj.game.nave.update_pos_x();
+            obj.game.chart.add_ponto(obj.game.nave.get_pontos());
+            console.log(obj.game.chart.get_pontos());
+            obj.updated_nave_flag = true;
+        }
+        
         if(tempo <= 0){
             delete obj.timer.values.reference;
             obj.timer.values.reference = new Date().getTime();
             if(obj.game.pool)
                 obj.game.pool.close_pool();
             obj.reinit_flag = true;
+            obj.updated_nave_flag = false;
             setTimeout(obj.begin, 50);
             return;
         }
