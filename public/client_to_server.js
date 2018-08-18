@@ -2,6 +2,24 @@ $(document).ready(() => {
     // -----------------------CLIENT VARIABLES AND GAME-------------------- //
     //var nave = new Nave(horse_json);
     //nave.animate("horse_run", true);
+
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+        // The data for our dataset
+        data: {
+            datasets: [{
+                label: "My First dataset",
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: []
+            }]
+        },
+        // Configuration options go here
+        options: {}
+    });
+
     var essencials = {};
     var user = {}
     var login_flag = false;
@@ -9,6 +27,7 @@ $(document).ready(() => {
         login_flag = true;
 
     if(login_flag) {
+
         setInterval(update, 300);
         // -----------------------SERVER INTERACTIONS------------------------ //
         // -----------------------SOCKET-------------------- //
@@ -18,11 +37,19 @@ $(document).ready(() => {
             user_id: sessionStorage.getItem("user_id")
         });
         socket.emit('get_essencials');
+        socket.emit('get_chart');
         // -----------------------SOCKET RECEIVERS-------------------- //
         socket.on('update_pool', (response) => {
-            if(login_flag)
-                essencials.game.pool = response.pool;
-            console.log("essencials: ", essencials);
+            essencials.game.pool = response.pool;
+            //console.log("essencials: ", essencials);
+        });
+
+        socket.on('add_chart_point', (ponto) => {
+            if(ponto)
+                chart.data.datasets.forEach((dataset) => {
+                    dataset.data.push(ponto);
+                });
+            chart.update();
         });
 
         socket.on('update_user', (response) => {
@@ -30,6 +57,13 @@ $(document).ready(() => {
                 essencials.user = response.user;
                 essencials.user.id = sessionStorage.getItem("user_id");
             }
+        });
+
+        socket.on('full_chart', (response) => {
+            chart.data.datasets.forEach((dataset) => {
+                dataset.data = response;
+            });
+            console.log(response);
         });
 
         socket.on('update_nave', (response) => {
@@ -67,6 +101,7 @@ $(document).ready(() => {
         function reduce_deadline() {
             socket.emit('reduce');
         }
+        //-----------------------CHART---------------------------//
         // -----------------------SERVER INTERACTIONS------------------------ //
         //-----------------------UPDATE---------------------------//
         function update() {
@@ -110,6 +145,7 @@ $(document).ready(() => {
         function show_user(user) {
 
         }
+        // ------------------------CHART-------------------------- //
         // ------------------------WINDOW INTERACTIONS-------------------------- //
         $('#reduce_deadline').on('click', reduce_deadline);
         $('#split_pp').on('click', () => {

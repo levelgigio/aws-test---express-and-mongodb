@@ -219,13 +219,13 @@ module.exports = class Mongo {
     //------------------------CHART------------------------//
     save_chart_point(ponto) {
         if(ponto)
-            this.db('prizeship').collection('chart').insert({ponto: ponto});
+            this.db.db('prizeship').collection('chart').insert({ponto: ponto});
         else
             console.log("SAVING UNDEFINED PONTO");
     }
     
     get_chart_points(callback) {
-        this.db('prizeship').collection('chart').find({ponto: {$exists: true}}).toArray((error, array) => {
+        this.db.db('prizeship').collection('chart').find({ponto: {$exists: true}}).toArray((error, array) => {
             if(error)
                 console.log("ERROR AO COLOCAR OS PONTOS EM ARRAY: ", error);
             else if(callback)
@@ -236,7 +236,7 @@ module.exports = class Mongo {
     }
     
     clear_chart() {
-        //this.db('prizeship').collection('chart').drop();
+        this.db.db('prizeship').collection('chart').drop();
     }
     
     //------------------------CONNECTION------------------------//

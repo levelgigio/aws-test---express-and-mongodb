@@ -4,7 +4,7 @@ module.exports = function(game) {
     this.timer;
     this.now;
     this.reinit_flag = false;
-    this.updated_nave_flag = false;
+    this.updated_chart_points_flag = false;
     //-------------------VARIABLES---------------------//
 
     //-------------------METHODS---------------------//
@@ -15,7 +15,7 @@ module.exports = function(game) {
         var hours = Math.floor((obj.timer.values.tempo_restante % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         var minutes = Math.floor((obj.timer.values.tempo_restante % (1000 * 60 * 60)) / (1000 * 60));
         var seconds = Math.floor((obj.timer.values.tempo_restante % (1000 * 60)) / 1000);
-        console.log("TEMPO ATE FECHAR A VOTACAO: " + hours + "h " + minutes + "m " + seconds + "s ");
+        //console.log("TEMPO ATE FECHAR A VOTACAO: " + hours + "h " + minutes + "m " + seconds + "s ");
 
 
 
@@ -23,11 +23,11 @@ module.exports = function(game) {
         obj.now = new Date().getTime();
         var tempo = obj.timer.values.duration + obj.timer.values.reference - obj.now;
         
-        if(tempo <= obj.timer.values.duration/2 && !obj.updated_nave_flag) {
+        if(tempo <= obj.timer.values.duration/2 && !obj.updated_chart_points_flag) {
             obj.game.nave.update_pos_x();
             obj.game.chart.add_ponto(obj.game.nave.get_pontos());
-            console.log(obj.game.chart.get_pontos());
-            obj.updated_nave_flag = true;
+            obj.game.get_sockets().emit('add_chart_point', obj.game.nave.get_pontos());
+            obj.updated_chart_points_flag = true;
         }
         
         if(tempo <= 0){
@@ -36,7 +36,7 @@ module.exports = function(game) {
             if(obj.game.pool)
                 obj.game.pool.close_pool();
             obj.reinit_flag = true;
-            obj.updated_nave_flag = false;
+            obj.updated_chart_points_flag = false;
             setTimeout(obj.begin, 50);
             return;
         }

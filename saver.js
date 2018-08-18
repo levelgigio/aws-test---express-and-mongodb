@@ -19,12 +19,14 @@ module.exports = function(how_often) {
             obj.database.save_pool(obj.pool[i].get_pool());
         for(var i = 0; i < obj.nave.length; i++) 
             obj.database.save_nave(obj.nave[i].get_nave());
-        for(var i = 0; i < obj.chart.length; i++)
-            for(var j = obj.chart[i].length; j > obj.pontos_salvos[i]; j--) {
+        for(var i = 0; i < obj.chart.length; i++) {
+            for(var j = obj.chart[i].get_pontos().length; j > obj.pontos_salvos[i]; j--) {
                 obj.database.save_chart_point(obj.chart[i].get_last_ponto());
                 obj.pontos_salvos[i]++;
             }
-             
+        }
+            
+         
         obj.save();
     }
     

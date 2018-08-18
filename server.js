@@ -24,7 +24,7 @@ game.set_database(database);
 game.set_sockets(io);
 
 database.connect((db) => {
-    game.start(true); // FLAG TO RESET STUFF IN THE DB
+    game.start(false); // FLAG TO RESET STUFF IN THE DB
 });
 
 //----------------------------------USER-------------------------------------//
@@ -74,6 +74,12 @@ io.sockets.on('connection', (socket) => {
             });
         else
             console.log("SOCKET DATA INVALID");
+    });
+
+    socket.on('get_chart', () => {
+        io.to(socket.id).emit('full_chart', {
+            chart: game.get_chart().get_pontos()
+        });
     });
 
     socket.on('split', (data) => {

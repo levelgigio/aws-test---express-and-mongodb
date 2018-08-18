@@ -115,6 +115,6 @@ module.exports = function() {
                 this.saver.add_chart(this.chart);
             });
         //--------------------------SAVER------------------------- //
-        setTimeout(this.saver.save, 10000);
+        setTimeout(this.saver.save, 5000);
     }
 }

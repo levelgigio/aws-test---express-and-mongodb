@@ -42,8 +42,8 @@ module.exports = function(game) {
         
         this.game.nave.update_pos_x();
         this.game.chart.add_ponto(this.game.nave.get_pontos());
-        console.log(this.game.chart.get_pontos());
-
+        this.game.get_sockets().emit('add_chart_point', this.game.nave.get_pontos());
+        //this.game.get_sockets().emit('add_chart_point', this.game.nave.get_pontos());
         // TODO: distribuir ip spent
     }
     //-------------------METHODS---------------------//
