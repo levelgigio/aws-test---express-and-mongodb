@@ -111,7 +111,8 @@ module.exports = function() {
         }
         else
             this.database.get_chart_points((pontos) => {
-                this.chart.set_pontos(pontos);
+                for(var i = 0; i < pontos.length; i++)
+                    this.chart.add_ponto(pontos[i].ponto);
                 this.saver.add_chart(this.chart);
             });
         //--------------------------SAVER------------------------- //

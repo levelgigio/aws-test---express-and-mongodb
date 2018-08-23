@@ -8,14 +8,7 @@ $(document).ready(() => {
         // The type of chart we want to create
         type: 'line',
         // The data for our dataset
-        data: {
-            datasets: [{
-                label: "My First dataset",
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
-                data: []
-            }]
-        },
+        data: {},
         // Configuration options go here
         options: {}
     });
@@ -59,11 +52,25 @@ $(document).ready(() => {
             }
         });
 
-        socket.on('full_chart', (response) => {
-            chart.data.datasets.forEach((dataset) => {
-                dataset.data = response;
-            });
-            console.log(response);
+        socket.on('full_chart', (response) => { 
+            console.log("chart: ", response);
+            var labels = [1, 2, 4];
+            var data = [20, 40, 60];
+
+            /*for (var i = 0; i < response.chart.length; i++) {
+                labels.push(response.chart[i].x);
+                data.push(response.chart[i].y);
+            }*/
+
+            chart.data.labels.pop();
+            chart.data.labels.push(labels);
+            
+            chart.data.datasets.push({
+                data: data});
+            
+            chart.update();
+            
+            console.log(chart);
         });
 
         socket.on('update_nave', (response) => {
