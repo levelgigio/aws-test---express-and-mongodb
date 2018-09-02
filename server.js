@@ -24,7 +24,7 @@ game.set_database(database);
 game.set_sockets(io);
 
 database.connect((db) => {
-    game.start(false); // FLAG TO RESET STUFF IN THE DB
+    game.start(true); // FLAG TO RESET STUFF IN THE DB
 });
 
 //----------------------------------USER-------------------------------------//
@@ -38,6 +38,7 @@ app.post('/login', (request, response) => {
     // funcao mongo retorna um objeto com status e possivelmente um id
     database.user_login(user, (user) => {
         response.send(user);
+        console.log(user);
     }); 
 });
 // ---------------------SOCKETS------------------- //

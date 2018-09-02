@@ -6,7 +6,11 @@ module.exports = function() {
     
     //-------------------METHODS---------------------//
     this.reduce_deadline = function() {
-        this.timer.values.deadline.setMilliseconds(this.timer.values.deadline.getMilliseconds()-this.timer.values.current_reduction);
+       var data = new Date();
+        data.setTime(this.timer.values.deadline);
+       data.setTime(this.timer.values.deadline-this.timer.values.current_reduction);
+        
+        this.timer.values.deadline = data.getTime();
     }
 
     this.set_timer = function(timer) {
@@ -22,11 +26,12 @@ module.exports = function() {
             timer_label: label,
             values: {
                 deadline: null,
-                current_reduction: 15000
+                current_reduction: 3233000
             }
         };
-        this.timer.values.deadline = new Date();
-        this.timer.values.deadline.setDate(this.timer.values.deadline.getDate() + tempo_max_dias);
+        var data = new Date();
+        data.setDate(data.getDate() + tempo_max_dias);
+        this.timer.values.deadline = data.getTime();
     }
     //-------------------METHODS---------------------//
 }

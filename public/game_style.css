@@ -1,0 +1,11 @@
+.chartWrapper {
+    overflow-x: scroll;
+}
+
+.chartAreaWrapper {
+    width: 1000px;
+}
+
+.jumbotron {
+    padding-top: 2%;
+}

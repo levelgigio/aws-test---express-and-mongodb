@@ -55,7 +55,7 @@ module.exports = class Mongo {
     update_user(user_id, user) {
         var id = new this.ObjectId(user_id);
         if(user && user_id)
-            this.db.db('prizeship').collection('users').update( { _id : id}, {user: user});
+            this.db.db('prizeship').collection('users').update( { _id : id}, {$set: {user: user}});
     }
 
     user_spent_ip(user_id, quant, callback) {
@@ -69,7 +69,7 @@ module.exports = class Mongo {
 
     user_login(user, callback) {
         if(user) {
-            this.db.db('prizeship').collection('users').find( { "user.username": user.username, "user.pwd": user.pwd} ).toArray((error, array) => {
+            this.db.db('prizeship').collection('users').find( { "secret.username": user.username, "secret.pwd": user.pwd} ).toArray((error, array) => {
                 if(error)
                     console.log("ERRO AO PASSAR PRA ARRAY OS USERS", error);
                 else if(callback)
@@ -100,6 +100,7 @@ module.exports = class Mongo {
                     if(response.status === "ok")
                         if(response.user.pp >= quant) {
                             response.user.pp -= quant;
+                            response.user.pp_spent += quant;
                             response.user.ip += quant*10;
                             this.update_user(user_id, response.user);
                             callback({
