@@ -24,7 +24,7 @@ game.set_database(database);
 game.set_sockets(io);
 
 database.connect((db) => {
-    game.start(true); // FLAG TO RESET STUFF IN THE DB
+    game.start(false); // FLAG TO RESET STUFF IN THE DB
 });
 
 //----------------------------------USER-------------------------------------//

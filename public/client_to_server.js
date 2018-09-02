@@ -89,11 +89,14 @@ $(document).ready(() => {
         });
 
         socket.on('full_chart', (response) => { 
+            console.log("full chart: ", response);
             var data = new Date();
-            for(var i = response.chart.length - 200; i < response.chart.length; i++) {
-                data.setTime(response.chart[i].x);
+            for(var i = response.chart.length, j = 0; i > response.chart.length - 200; i--, j++) {
+                if(j === response.chart.length)
+                    break;
+                data.setTime(response.chart[i-1].x);
                 barChartData.labels.push(data.getDate() + "/" + (data.getMonth()+1));
-                barChartData.datasets[0].data.push(response.chart[i].y);
+                barChartData.datasets[0].data.push(response.chart[i-1].y);
             }
             myBar.update();
         });
@@ -118,8 +121,8 @@ $(document).ready(() => {
         });
 
         socket.on('essencials', (cessencials) => {
+            console.log("essencials: ");
             essencials.game = cessencials;
-            console.log("essencials: ", essencials);
         });
         //-----------------------POOL---------------------------//
         function vote(voto) {
@@ -182,7 +185,7 @@ $(document).ready(() => {
             $("#pool_subir").text("SUBIR: " + pool.subir);
             $("#pool_descer").text("DESCER: " + pool.descer);
         }
-        
+
         function show_prize(prize) {
             $("#prize_pot").text("");
         }
