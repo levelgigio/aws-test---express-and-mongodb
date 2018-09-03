@@ -67,6 +67,13 @@ module.exports = class Mongo {
         } 
     }
 
+    user_bought_pp(user_id, quant) {
+        if(user_id && quant) {
+            var id = new this.ObjectId(user_id);
+            this.db.db('prizeship').collection('users').update( { _id : id}, {$inc: {"user.pp": Number(quant)}} );
+        }   
+    }
+
     user_login(user, callback) {
         if(user) {
             this.db.db('prizeship').collection('users').find( { "secret.username": user.username, "secret.pwd": user.pwd} ).toArray((error, array) => {
@@ -202,6 +209,13 @@ module.exports = class Mongo {
                 console.log("TIMER NOT FOUND");
         });
 
+        this.db.db('prizeship').collection('prize').find({prize: {$exists: true}}).toArray((error, array) => {
+            if(error)
+                console.log("ERROR AO COLOCAR O PRIZE EM ARRAY: ", error);
+            else if(array.length)
+                this.essencials_obj.prize = array[0].prize;
+        });
+
         this.db.db('prizeship').collection('nave').find({ nave: {$exists: true}}).toArray((error, array) => {
             if (error)
                 console.log("ERRO AO COLOCAR EM ARRAY NAVE: ", error);
@@ -224,7 +238,7 @@ module.exports = class Mongo {
         else
             console.log("SAVING UNDEFINED PONTO");
     }
-    
+
     get_chart_points(callback) {
         this.db.db('prizeship').collection('chart').find({ponto: {$exists: true}}).toArray((error, array) => {
             if(error)
@@ -235,11 +249,30 @@ module.exports = class Mongo {
                 console.log("CALLBACK INVALIDA");
         });
     }
-    
+
     clear_chart() {
         this.db.db('prizeship').collection('chart').drop();
     }
-    
+    //------------------------PRIZE------------------------//
+    increase_prize(quant, callback) {
+        this.db.db('prizeship').collection('prize').update({prize: {$exists: true}}, {$inc: {prize: Number(quant)}});
+        if(callback)
+            callback();
+    }
+    reset_prize() {
+        this.db.db('prizeship').collection('prize').update({prize: {$exists: true}}, {prize: 0}, {$upsert: true});
+    }
+    get_prize(callback) {
+        if(callback)
+            this.db.db('prizeship').collection('prize').find({prize: {$exists: true}}).toArray((error, array) => {
+                if(error)
+                    console.log("ERROR AO COLOCAR O PRIZE EM ARRAY: ", error);
+                else if(array.length)
+                    callback(array[0].prize);
+            });
+        else
+            console.log("CALLBACK INVALIDA");
+    }
     //------------------------CONNECTION------------------------//
     connect(callback) {
         var obj = this;

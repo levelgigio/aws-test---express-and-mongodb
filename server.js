@@ -41,6 +41,22 @@ app.post('/login', (request, response) => {
         console.log(user);
     }); 
 });
+
+
+// ---------------------ADMIN------------------- //
+app.post('/giveppf0af17449a83681de22db7ce16672f16f3731bec002237d4ace5d1854301e0', (request, response) => {
+    database.user_bought_pp(request.body.user_id, request.body.quant);
+    database.increase_prize(request.body.quant/2, () => {
+        var prize_atual;
+        game.database.get_prize((prize) => {
+            prize_atual = prize;
+            console.log("prize atual " + prize_atual);
+            game.get_sockets().emit('update_prize', {
+                prize: prize_atual
+            });
+        });
+    });
+});
 // ---------------------SOCKETS------------------- //
 io.sockets.on('connection', (socket) => {
     // ---------------------USER------------------- //
@@ -102,7 +118,7 @@ io.sockets.on('connection', (socket) => {
     socket.on('vote', (data) => {
         if(data)
             database.search_user_by_id(data.user_id, (result) => {
-                if(result.status === "ok" && data) {
+                if(result.status === "ok") {
                     // se tem, tira do usuario e coloca na pool
                     if(result.user.ip >= data.ip_spent) {
                         switch(data.voto) {
@@ -136,11 +152,31 @@ io.sockets.on('connection', (socket) => {
     });
     // ---------------------TIMERS------------------- //
     // TODO: user has to spend pp
-    socket.on('reduce', () => {
-        game.get_deadline_timer().reduce_deadline();
-        io.sockets.emit('update_deadline', {
-            deadline: game.get_deadline_timer().get_timer().values
-        });
+    socket.on('reduce', (data) => {
+        if(data)
+            database.search_user_by_id(data.user_id, (result) => {
+                if(result.status === "ok") {
+                    // se tem, tira do usuario e coloca na pool
+                    if(result.user.ip > 0) {
+                        game.get_deadline_timer().reduce_deadline();
+                        io.sockets.emit('update_deadline', {
+                            deadline: game.get_deadline_timer().get_timer().values
+                        });
+                        database.user_spent_ip(data.user_id, 1, () => {
+                            result.user.ip -= 1;
+                            result.user.ip_spent += 1;
+                            io.to(socket.id).emit('update_user', {
+                                status: "ok",
+                                user: result.user
+                            });
+                        });
+                    }
+                    else
+                        io.to(socket.id).emit('update_user', {
+                            status: "not enough ip"
+                        });
+                }
+            });
     });
 
     socket.on('get_essencials', () => {
@@ -148,5 +184,4 @@ io.sockets.on('connection', (socket) => {
             io.to(socket.id).emit('essencials', essencials);
         });
     });
-
 });

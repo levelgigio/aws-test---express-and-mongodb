@@ -115,6 +115,9 @@ module.exports = function() {
                     this.chart.add_ponto(pontos[i].ponto);
                 this.saver.add_chart(this.chart);
             });
+        //--------------------------PRIZE------------------------- //
+        if(start_new)
+            this.database.reset_prize();
         //--------------------------SAVER------------------------- //
         setTimeout(this.saver.save, 5000);
     }

@@ -89,7 +89,6 @@ $(document).ready(() => {
         });
 
         socket.on('full_chart', (response) => { 
-            console.log("full chart: ", response);
             var data = new Date();
             for(var i = response.chart.length, j = 0; i > response.chart.length - 200; i--, j++) {
                 if(j === response.chart.length)
@@ -121,8 +120,12 @@ $(document).ready(() => {
         });
 
         socket.on('essencials', (cessencials) => {
-            console.log("essencials: ");
             essencials.game = cessencials;
+            console.log("essencials", essencials);
+        });
+        //-----------------------PRIZE---------------------------//
+        socket.on('update_prize', (response) => {
+            essencials.game.prize = response.prize;
         });
         //-----------------------POOL---------------------------//
         function vote(voto) {
@@ -133,15 +136,17 @@ $(document).ready(() => {
             });
         }
         //-----------------------USER---------------------------//
-        function split_pp(user_id, quant) {
+        function split_pp(quant) {
             socket.emit('split', {
-                user_id: user_id,
+                user_id: essencials.user.id,
                 pp_to_split: quant
             });
         }
         //-----------------------TIMERS---------------------------//
         function reduce_deadline() {
-            socket.emit('reduce');
+            socket.emit('reduce', {
+                user_id: essencials.user.id
+            });
         }
         //-----------------------CHART---------------------------//
         // -----------------------SERVER INTERACTIONS------------------------ //
@@ -150,6 +155,7 @@ $(document).ready(() => {
             show_nave(essencials.game.nave);
             show_pool(essencials.game.pool);
             show_user(essencials.user);
+            show_prize(essencials.game.prize);
             show_deadline(essencials.game.deadline);
             show_countdown_time(essencials.game.countdown);
         }
@@ -187,7 +193,7 @@ $(document).ready(() => {
         }
 
         function show_prize(prize) {
-            $("#prize_pot").text("");
+            $("#prize_pot").text(prize);
         }
 
         function show_user(user) {
@@ -200,7 +206,7 @@ $(document).ready(() => {
         // ------------------------WINDOW INTERACTIONS-------------------------- //
         $('#reduce_deadline').on('click', reduce_deadline);
         $('#split_pp').on('click', () => {
-            split_pp(essencials.user.id, 1);
+            split_pp(1);
         });
         $('#vote_descer').on('click', () => {
             vote("descer"); 
@@ -211,5 +217,21 @@ $(document).ready(() => {
         $(window).focus(() => {
             socket.emit('get_essencials');
         });
+
+        // ------------------------ADMIN-------------------------- //
+        $('#buy_pp').on('click', () => {
+            buy_pp(essencials.user.id, 2);
+        });
+
+        function buy_pp(user_id, quant) {
+            $.post(window.location.protocol + "//" + window.location.host + "/giveppf0af17449a83681de22db7ce16672f16f3731bec002237d4ace5d1854301e0", {
+                user_id: user_id,
+                quant: quant
+            });
+            socket.emit('get_essencials');
+            socket.emit('get_user', {
+                user_id: sessionStorage.getItem("user_id")
+            });
+        }
     }
 });
