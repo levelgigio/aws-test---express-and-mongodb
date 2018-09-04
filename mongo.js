@@ -51,10 +51,65 @@ module.exports = class Mongo {
                 console.log("CALLBACK INVALIDA");
         });
     }
-    
-    user_final_guess(guess_min) {
-        
+
+    user_final_guess(user_id, guess_min, guess_range, callback) {
+        var id = new this.ObjectId(user_id);
+        if(user_id && !isNaN(guess_min + guess_range))
+            this.db.db('prizeship').collection('users').find( { _id : id}).toArray((error, array) => {
+                if(error)
+                    console.log("ERRO AO PASSAR PRA ARRAY OS USERS FINAL GUESS", error);
+                else if(callback)
+                    if(array.length)
+                        if(array[0].user.final_guess_min === null) {
+                            this.db.db('prizeship').collection('users').update( { _id : id}, {$set: {"user.final_guess_date": new Date().getTime(), "user.final_guess_min": Number(guess_min), "user.final_guess_max": Number(guess_range) + Number(guess_min)}}, (error, obj) => {
+                                this.search_user_by_id(user_id, (user) => {
+                                    callback(user);
+                                });
+                            });
+                        }
+                        else
+                            callback({
+                                status: "already guessed",
+                            });
+                    else
+                        callback({
+                            status: "not found",
+                        });
+                else
+                    console.log("CALLBACK INVALIDA");
+            });
     }
+
+    user_daily_guess(user_id, guess_min, guess_range, callback) {
+        var id = new this.ObjectId(user_id);
+        if(user_id && !isNaN(guess_min + guess_range))
+            this.db.db('prizeship').collection('users').find( { _id : id}).toArray((error, array) => {
+                if(error)
+                    console.log("ERRO AO PASSAR PRA ARRAY OS USERS DAILY GUESS", error);
+                else if(callback)
+                    if(array.length)
+                        if(array[0].user.daily_guess_min === null) {
+                            this.db.db('prizeship').collection('users').update( { _id : id}, {$set: {"user.daily_guess_date": new Date().getTime(), "user.daily_guess_min": Number(guess_min), "user.daily_guess_max": Number(guess_range) + Number(guess_min)}}, (error, obj) => {
+                                this.search_user_by_id(user_id, (user) => {
+                                    callback(user);
+                                });
+                            });
+                        }
+                        else
+                            callback({
+                                status: "already guessed",
+                                user: user
+                            });
+                    else
+                        callback({
+                            status: "not found",
+                        });
+                else
+                    console.log("CALLBACK INVALIDA");
+            });
+    }
+
+
 
     update_user(user_id, user) {
         var id = new this.ObjectId(user_id);
@@ -102,7 +157,9 @@ module.exports = class Mongo {
                                 pp: 0,
                                 pp_spent: 0,
                                 daily_guess_min: 0,
-                                final_guess_min: 0
+                                daily_guess_date: "none",
+                                final_guess_min: 0,
+                                final_guess_date: "none"
                             }
                         }, (error, obj) => {
                             callback({

@@ -3,6 +3,23 @@ $(document).ready(() => {
     //var nave = new Nave(horse_json);
     //nave.animate("horse_run", true);
 
+    var final_guess_div = `<div class="input-group" id="final_guess_div">
+<input type="number" class="form-control" placeholder="Final Guess Minimum" id="final_guess">
+<div class="input-group-append">
+<span class="input-group-text" id="max_final_guess">Max: </span>
+</div>
+<button type="button" class="btn btn-primary mx-lg-3" id="final_guess_btn">Confirm</button>
+</div>`;
+    var detach_final_flag = false;
+    var daily_guess_div = `<div class="input-group" id="daily_guess_div">
+<input type="number" class="form-control" placeholder="Daily Guess Minimum" id="daily_guess">
+<div class="input-group-append">
+<span class="input-group-text" id="max_daily_guess">Max: </span>
+</div>
+<button type="button" class="btn btn-primary mx-lg-3" id="daily_guess_btn">Confirm</button>
+</div>`;
+    var detach_daily_flag = false;
+
     var chartColors = {
         red: 'rgb(255, 99, 132)',
         orange: 'rgb(255, 159, 64)',
@@ -72,6 +89,10 @@ $(document).ready(() => {
         socket.emit('get_essencials');
         socket.emit('get_chart');
         // -----------------------SOCKET RECEIVERS-------------------- //
+        socket.on('status_error', (response) => {
+            console.log("status: " + response);
+        });
+
         socket.on('update_pool', (response) => {
             essencials.game.pool = response.pool;
             //console.log("essencials: ", essencials);
@@ -104,7 +125,52 @@ $(document).ready(() => {
             if(response.status === "ok") {
                 essencials.user = response.user;
                 essencials.user.id = sessionStorage.getItem("user_id");
+                
+                console.log("update user");
+                
+                if(essencials.user.final_guess_min === null && !detach_final_flag) {
+                    $('#guesses').append(final_guess_div);
+                    detach_final_flag = true;
+
+                    $('#final_guess_btn').on('click', () => {
+                        if(!isNaN($('#final_guess').val()))
+                            socket.emit('final_guess', {
+                                user_id: essencials.user.id,
+                                guess_min: $('#final_guess').val()
+                            });
+                        else
+                            alert('Guess Invalida');
+                    });
+                }
+                else if(essencials.user.final_guess_min !== null && detach_final_flag) {
+                    final_guess_div = $('#final_guess_div').detach();
+                    detach_final_flag = false;
+                }
+
+
+                if(essencials.user.daily_guess_min === null && !detach_daily_flag) {
+                    $('#guesses').append(daily_guess_div);
+                    detach_daily_flag = true;
+                    
+                    console.log("appendeu");
+
+                    $('#daily_guess_btn').on('click', () => {
+                        if(!isNaN($('#daily_guess').val()))
+                            socket.emit('daily_guess', {
+                                user_id: essencials.user.id,
+                                guess_min: $('#daily_guess').val()
+                            });
+                        else
+                            alert('Guess Invalida');
+                    });
+                }
+                else if(essencials.user.daily_guess_min !== null && detach_daily_flag) {
+                    daily_guess_div = $('#daily_guess_div').detach();
+                    detach_daily_flag = false;
+                    console.log("desappendeu");
+                }  
             }
+            console.log(response);
         });
 
         socket.on('update_nave', (response) => {
@@ -179,15 +245,9 @@ $(document).ready(() => {
         }
 
         function show_nave(cnave) {
-            /*if( Number($("#altitude-nave").text()))
-                if( Number($("#altitude-nave").text()) > cnave.altitude)
-                    nave.animate("horse_bend");
-                else if ( Number($("#altitude-nave").text()) < cnave.altitude )
-                    nave.animate("horse_jump");
-                    */
             $("#altitude-nave").text(cnave.altitude);
         }
-        
+
         function show_background(nave) {
             if(nave.altitude > 0)
                 $(".jumbotron").attr("style", "background-color: #FAFFB2");
@@ -224,8 +284,13 @@ $(document).ready(() => {
         $('#vote_subir').on('click', () => {
             vote("subir");
         });
+
+
         $(window).focus(() => {
             socket.emit('get_essencials');
+            socket.emit('get_user', {
+                user_id: sessionStorage.getItem("user_id")
+            });
         });
 
         // ------------------------ADMIN-------------------------- //

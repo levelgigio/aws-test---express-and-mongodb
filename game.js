@@ -2,6 +2,10 @@ module.exports = function() {
     //--------------------------VARIABLES AND METHODS------------------------- //
     this.database;
     this.sockets;
+    this.guess_range = 200;
+    this.get_guess_range = function() {
+        return this.guess_range;
+    }
     //--------------------------SOCKETS------------------------- //
     this.set_sockets = function(io) {
         this.sockets = io.sockets;

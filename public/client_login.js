@@ -15,10 +15,10 @@ function onSignIn(googleUser) {
         profile_id: profile.getId()
     }, (response) => {
         sessionStorage.setItem("user_id", response.user_id);
-        if(response.status === "returning")
+        //if(response.status === "returning")
             window.location.href = "game.html";
-        else if (response.status === "new")
-            window.location.href = "guess.html";
+        //else if (response.status === "new")
+            //window.location.href = "guess.html";
     });
     
 };

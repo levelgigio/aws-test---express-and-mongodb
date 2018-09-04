@@ -53,7 +53,38 @@ app.post('/giveppf0af17449a83681de22db7ce16672f16f3731bec002237d4ace5d1854301e0'
 // ---------------------SOCKETS------------------- //
 io.sockets.on('connection', (socket) => {
     // ---------------------USER------------------- //
-    socket.on('login', (data) => {
+    socket.on('daily_guess', (data) => {
+        if(data) 
+            if(!isNaN(data.guess_min))
+                database.user_daily_guess(data.user_id, data.guess_min, game.get_guess_range(), (response) => {
+                    if(response.status === "ok")
+                        io.to(socket.id).emit('update_user', {
+                            status: "ok",
+                            user: response.user
+                        });
+                    else
+                        io.to(socket.id).emit('status_error', response.status);
+                });
+
+    });
+
+    socket.on('final_guess', (data) => {
+        if(data) 
+            if(!isNaN(data.guess_min))
+                database.user_final_guess(data.user_id, data.guess_min, game.get_guess_range(), (response) => {
+                    if(response.status === "ok")
+                        io.to(socket.id).emit('update_user', {
+                            status: "ok",
+                            user: response.user
+                        });
+                    else
+                        io.to(socket.id).emit('status_error', response.status);
+                });
+
+
+    });
+
+    /*socket.on('login', (data) => {
         if(data) {
             var user_credentials = {
                 username: data.username,
@@ -71,7 +102,7 @@ io.sockets.on('connection', (socket) => {
         }
         else
             console.log("SOCKET DATA INVALID");
-    }); 
+    }); */
 
     socket.on('get_user', (data) => {
         if(data)
