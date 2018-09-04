@@ -1,5 +1,6 @@
 // TODO: LIMITAR O CORS PRO SITE FINAL
 var cors = require('cors');
+var path = require('path');
 var express = require('express');
 var socket = require('socket.io');
 var app = express();
@@ -29,16 +30,8 @@ database.connect((db) => {
 
 //----------------------------------USER-------------------------------------//
 app.post('/login', (request, response) => {
-    var username = request.body.username;
-    var pwd = request.body.pwd;
-    var user = {
-        username: username,
-        pwd: pwd
-    };
-    // funcao mongo retorna um objeto com status e possivelmente um id
-    database.user_login(user, (user) => {
+    database.user_login(request.body.profile_id, (user) => {
         response.send(user);
-        console.log(user);
     }); 
 });
 

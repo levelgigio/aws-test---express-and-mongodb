@@ -153,6 +153,7 @@ $(document).ready(() => {
         //-----------------------UPDATE---------------------------//
         function update() {
             show_nave(essencials.game.nave);
+            show_background(essencials.game.nave);
             show_pool(essencials.game.pool);
             show_user(essencials.user);
             show_prize(essencials.game.prize);
@@ -185,6 +186,15 @@ $(document).ready(() => {
                     nave.animate("horse_jump");
                     */
             $("#altitude-nave").text(cnave.altitude);
+        }
+        
+        function show_background(nave) {
+            if(nave.altitude > 0)
+                $(".jumbotron").attr("style", "background-color: #FAFFB2");
+            else if(nave.altitude < 0)
+                $(".jumbotron").attr("style", "background-color: #242A2C");
+            else
+                $(".jumbotron").attr("style", "background-color: #C9CACC");
         }
 
         function show_pool(pool) {

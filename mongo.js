@@ -51,6 +51,10 @@ module.exports = class Mongo {
                 console.log("CALLBACK INVALIDA");
         });
     }
+    
+    user_final_guess(guess_min) {
+        
+    }
 
     update_user(user_id, user) {
         var id = new this.ObjectId(user_id);
@@ -74,21 +78,38 @@ module.exports = class Mongo {
         }   
     }
 
-    user_login(user, callback) {
-        if(user) {
-            this.db.db('prizeship').collection('users').find( { "secret.username": user.username, "secret.pwd": user.pwd} ).toArray((error, array) => {
+    user_login(profile_id, callback) {
+        if(profile_id) {
+            this.db.db('prizeship').collection('users').find( {"secret.profile_id": profile_id} ).toArray((error, array) => {
                 if(error)
                     console.log("ERRO AO PASSAR PRA ARRAY OS USERS", error);
                 else if(callback)
                     if(array.length)
                         callback({
-                            status: "ok",
+                            status: "returning",
                             user: array[0].user,
                             user_id: array[0]._id
-                        }); // retorna o id do usuario com esse username e senha
+                        });
                     else
-                        callback({
-                            status: "not found"
+                        this.db.db('prizeship').collection('users').insert({
+                            secret: {
+                                profile_id: profile_id,
+                                entry_date: new Date().getTime()
+                            },
+                            user: {
+                                ip: 0,
+                                ip_spent: 0,
+                                pp: 0,
+                                pp_spent: 0,
+                                daily_guess_min: 0,
+                                final_guess_min: 0
+                            }
+                        }, (error, obj) => {
+                            callback({
+                                status: "new",
+                                user: obj.user,
+                                user_id: obj._id
+                            });
                         });
                 else
                     console.log("CALLBACK INVALIDA");

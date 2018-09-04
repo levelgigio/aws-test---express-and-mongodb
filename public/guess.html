@@ -15,47 +15,41 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
 
         <!-- CLIENT SIDE TO SERVER INTERACTION FUNCTIONS -->
-        <script src="game.js" type="text/javascript"></script>
+        <script src="guess.js" type="text/javascript"></script>
         <!-- CLIENT SIDE ONLY FUNCTIONS-->
-        <script src="nave.js" type="text/javascript"></script>
-        <script src="horse_json.js"></script>
-        <link rel="stylesheet" href="game_style.css">
     </head>
 
     <body>
         <div class="jumbotron">
             <div class="row">
                 <div class="col-lg-4">
-                    <div>
-                        <p class="d-inline">IP: </p><p class="d-inline" id="user_ip"></p>
-                        <br>
-                        <p class="d-inline">IP SPENT: </p><p class="d-inline" id="user_ip_spent"></p>
-                        <br>
-                        <p class="d-inline">PP: </p><p class="d-inline" id="user_pp"></p>
-                        <br>
-                        <p class="d-inline">PP SPENT: </p><p class="d-inline" id="user_pp_spent"></p>
-                        <br>
-                        <button class="btn-dark btn btn-sm" id="split_pp" type="button">SPLIT</button>
-                        <button class="btn-dark btn btn-sm" id="buy_pp" type="button">COMPRAR+</button>
-                    </div>
 
                 </div>
                 <div class="col-lg-4 text-center">
                     <p id="countdown_time"></p>
                 </div>
                 <div class="col-lg-4 text-center">
-                   <p class="d-inline">PRIZE POT: $</p><p class="d-inline" id="prize_pot"></p>
+                    <p class="d-inline">PRIZE POT: $</p><p class="d-inline" id="prize_pot"></p>
                 </div>
             </div>
             <div class="row my-lg-5 mx-lg-auto">
-                <div>
-                    <img id="horse">
+                <div class="col-lg-5">
+                    <p class="d-inline">ALTITUDE: </p><p class="d-inline" id="altitude-nave"></p>
+
+
                 </div>
-                <p class="d-inline">ALTITUDE: </p><p class="d-inline" id="altitude-nave"></p>
+                <div class="col-lg-5">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Final Guess Minimum">
+                        <div class="input-group-append">
+                            <span class="input-group-text" id="max_guess">Max: </span>
+                        </div>
+                        <button type="button" class="btn btn-primary mx-lg-3">Confirm</button>
+                    </div>
+                </div>
             </div>
             <div class="row">
                 <div class="col-lg-4 my-lg-auto">
-                    <button class="d-inline btn btn-md btn-dark" id="reduce_deadline"><i class="fas fa-hourglass-half"></i></button>
                     <p class="d-inline" id="deadline"></p>
                 </div>
                 <div class="col-lg-6 my-lg-auto">
@@ -67,11 +61,9 @@
                 </div>
                 <div class="col-lg-1 my-lg-auto">
                     <p id="pool_subir"></p>
-                    <button class="btn btn-md btn-dark" id="vote_subir">SUBIR</button>
                 </div>
                 <div class="col-lg-1 my-lg-auto">
                     <p id="pool_descer"></p>
-                    <button class="btn btn-md btn-dark" id="vote_descer">DESCER</button>
                 </div>
             </div>
         </div>
